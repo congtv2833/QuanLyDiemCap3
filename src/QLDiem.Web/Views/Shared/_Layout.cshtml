@@ -1,0 +1,152 @@
+@using Microsoft.AspNetCore.Identity
+@using QLDiem.Infrastructure.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var dangNhap = SignInManager.IsSignedIn(User);
+    var hoTen = User.Identity?.Name ?? string.Empty;
+    var laAdmin = User.IsInRole(VaiTro.Admin);
+    var laGiaoVien = User.IsInRole(VaiTro.GiaoVien);
+    var laHocSinh = User.IsInRole(VaiTro.HocSinh);
+
+    string Active(string controller) =>
+        string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), controller,
+            StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản lý điểm học sinh</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+@if (dangNhap)
+{
+    <header class="thanh-tren">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-light d-lg-none" type="button"
+                        data-bs-toggle="offcanvas" data-bs-target="#menuNgang">Menu</button>
+                <a class="thuong-hieu" asp-controller="Home" asp-action="Index">
+                    Quản lý điểm học sinh THPT
+                </a>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                    @hoTen
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><span class="dropdown-item-text small text-muted">
+                        @(laAdmin ? "Quản trị viên" : laGiaoVien ? "Giáo viên" : "Học sinh")
+                    </span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" asp-controller="Account" asp-action="DoiMatKhau">Đổi mật khẩu</a></li>
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="dropdown-item">Đăng xuất</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="khung-chinh">
+        <nav class="menu-ben offcanvas-lg offcanvas-start" id="menuNgang">
+            <div class="offcanvas-header d-lg-none">
+                <h6 class="offcanvas-title">Chức năng</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#menuNgang"></button>
+            </div>
+            <div class="offcanvas-body flex-column p-0">
+                <ul class="nav flex-column w-100">
+                    <li class="nav-item">
+                        <a class="nav-link @Active("Home")" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
+
+                    @if (laAdmin || laGiaoVien)
+                    {
+                        <li class="nhom-menu">Quản lý điểm</li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("Diem")" asp-controller="Diem" asp-action="Index">Nhập điểm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("TraCuu")" asp-controller="TraCuu" asp-action="Index">Tra cứu điểm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("ThongKe")" asp-controller="ThongKe" asp-action="Index">Thống kê</a>
+                        </li>
+
+                        <li class="nhom-menu">Hồ sơ</li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("HocSinh")" asp-controller="HocSinh" asp-action="Index">Học sinh</a>
+                        </li>
+                    }
+
+                    @if (laAdmin)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @Active("GiaoVien")" asp-controller="GiaoVien" asp-action="Index">Giáo viên</a>
+                        </li>
+
+                        <li class="nhom-menu">Danh mục</li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("Lop")" asp-controller="Lop" asp-action="Index">Lớp học</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("MonHoc")" asp-controller="MonHoc" asp-action="Index">Môn học</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("PhanCong")" asp-controller="PhanCong" asp-action="Index">Phân công giảng dạy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("NamHoc")" asp-controller="NamHoc" asp-action="Index">Năm học</a>
+                        </li>
+                    }
+
+                    @if (laHocSinh)
+                    {
+                        <li class="nhom-menu">Kết quả của tôi</li>
+                        <li class="nav-item">
+                            <a class="nav-link @Active("TraCuu")" asp-controller="TraCuu" asp-action="Index">Xem điểm</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+
+        <main class="vung-noi-dung">
+            @if (TempData["ThanhCong"] is string tb)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @tb
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Loi"] is string loi)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @loi
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+}
+else
+{
+    @RenderBody()
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

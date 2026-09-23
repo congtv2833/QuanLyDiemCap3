@@ -1,0 +1,56 @@
+@model Lop
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm lớp" : "Sửa lớp";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 560px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Tên lớp</label>
+                <input asp-for="Ten" class="form-control" placeholder="10A1" />
+                <span asp-validation-for="Ten" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Khối</label>
+                <select asp-for="Khoi" class="form-select">
+                    <option value="10">Khối 10</option>
+                    <option value="11">Khối 11</option>
+                    <option value="12">Khối 12</option>
+                </select>
+                <span asp-validation-for="Khoi" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Năm học</label>
+            <select asp-for="NamHocId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachNamHoc"></select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Giáo viên chủ nhiệm</label>
+            <select asp-for="GiaoVienChuNhiemId" class="form-select"
+                    asp-items="(SelectList)ViewBag.DanhSachGiaoVien">
+                <option value="">-- Chưa phân công --</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

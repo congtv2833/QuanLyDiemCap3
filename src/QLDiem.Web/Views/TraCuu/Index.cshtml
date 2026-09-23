@@ -1,0 +1,72 @@
+@model TraCuuVM
+@{
+    ViewData["Title"] = "Tra cứu điểm";
+}
+
+<div class="tieu-de-trang">
+    <h1>Tra cứu điểm học sinh</h1>
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-5">
+            <label class="form-label mb-1">Tên hoặc mã học sinh</label>
+            <input type="text" name="tuKhoa" value="@Model.TuKhoa" class="form-control"
+                   placeholder="Ví dụ: Nguyễn Văn An hoặc HS0001" />
+        </div>
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Lớp</label>
+            <select name="lopId" class="form-select">
+                <option value="">-- Tất cả các lớp --</option>
+                @foreach (var l in Model.DanhSachLop)
+                {
+                    <option value="@l.Id" selected="@(Model.LopId == l.Id)">@l.Ten</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+        </div>
+    </form>
+</div>
+
+@if (Model.KetQua.Count > 0)
+{
+    <div class="the">
+        <div class="text-muted small mb-2">Tìm thấy @Model.KetQua.Count học sinh</div>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th style="width: 120px;">Mã HS</th>
+                    <th>Họ và tên</th>
+                    <th style="width: 120px;">Ngày sinh</th>
+                    <th style="width: 100px;">Lớp</th>
+                    <th style="width: 260px;"></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var hs in Model.KetQua)
+                {
+                    <tr>
+                        <td>@hs.MaHocSinh</td>
+                        <td>@hs.HoTen</td>
+                        <td>@hs.NgaySinh.ToString("dd/MM/yyyy")</td>
+                        <td>@hs.TenLop</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary"
+                               asp-action="HocBa" asp-route-id="@hs.Id">Kết quả học tập</a>
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-action="ChiTiet" asp-route-id="@hs.Id" asp-route-hocKy="1">Chi tiết đầu điểm</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else if (Model.TuKhoa is not null || Model.LopId is not null)
+{
+    <div class="the text-muted">Không tìm thấy học sinh nào phù hợp.</div>
+}

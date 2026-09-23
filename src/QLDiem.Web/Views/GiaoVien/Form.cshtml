@@ -1,0 +1,74 @@
+@model GiaoVien
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm giáo viên" : "Sửa hồ sơ giáo viên";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 720px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <label class="form-label">Mã giáo viên</label>
+                <input asp-for="MaGiaoVien" class="form-control" placeholder="GV001" />
+                <span asp-validation-for="MaGiaoVien" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-8">
+                <label class="form-label">Họ và tên</label>
+                <input asp-for="HoTen" class="form-control" />
+                <span asp-validation-for="HoTen" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <label class="form-label">Giới tính</label>
+                <select asp-for="GioiTinh" class="form-select">
+                    <option value="1">Nam</option>
+                    <option value="2">Nữ</option>
+                    <option value="3">Khác</option>
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Ngày sinh</label>
+                <input asp-for="NgaySinh" type="date" class="form-control" />
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Chuyên môn</label>
+                <input asp-for="ChuyenMon" class="form-control" placeholder="Toán" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Điện thoại</label>
+                <input asp-for="DienThoai" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="DangCongTac" class="form-check-input" />
+            <label asp-for="DangCongTac" class="form-check-label">Đang công tác</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

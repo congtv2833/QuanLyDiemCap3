@@ -1,0 +1,94 @@
+@model ThongKeVM
+@{
+    ViewData["Title"] = "Phổ điểm theo môn";
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Phổ điểm theo môn học</h1>
+        <div class="text-muted small">
+            Năm học @Model.TenNamHoc &ndash; @QuyCheDanhGia.TenHocKy(Model.HocKy) &middot;
+            thống kê trên ĐTBm của từng học sinh
+        </div>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index" asp-route-hocKy="@((int)Model.HocKy)">
+        Xem thống kê theo lớp
+    </a>
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Học kỳ</label>
+            <select name="hocKy" class="form-select" onchange="this.form.submit()">
+                <option value="1" selected="@(Model.HocKy == HocKy.HocKyI)">Học kỳ I</option>
+                <option value="2" selected="@(Model.HocKy == HocKy.HocKyII)">Học kỳ II</option>
+                <option value="3" selected="@(Model.HocKy == HocKy.CaNam)">Cả năm</option>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Lớp</label>
+            <select name="lopId" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Toàn trường --</option>
+                @foreach (var l in Model.DanhSachLop)
+                {
+                    <option value="@l.Id" selected="@(Model.LopId == l.Id)">@l.Ten</option>
+                }
+            </select>
+        </div>
+    </form>
+</div>
+
+@if (Model.TheoMon.Count == 0)
+{
+    <div class="the text-muted">Chưa có dữ liệu điểm cho kỳ đã chọn.</div>
+}
+else
+{
+    <div class="the">
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Môn học</th>
+                    <th class="text-center">Số HS</th>
+                    <th class="text-center">ĐTB</th>
+                    <th class="text-center">Cao nhất</th>
+                    <th class="text-center">Thấp nhất</th>
+                    <th class="text-center">Từ 8,0</th>
+                    <th class="text-center">6,5 &ndash; 7,9</th>
+                    <th class="text-center">5,0 &ndash; 6,4</th>
+                    <th class="text-center">3,5 &ndash; 4,9</th>
+                    <th class="text-center">Dưới 3,5</th>
+                    <th style="width: 160px;">Từ 5,0 trở lên</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var m in Model.TheoMon)
+                {
+                    <tr>
+                        <td class="fw-semibold">@m.TenMon</td>
+                        <td class="text-center">@m.SoHocSinhCoDiem</td>
+                        <td class="text-center fw-semibold">@HienThi.Diem(m.DiemTrungBinh)</td>
+                        <td class="text-center">@HienThi.Diem(m.DiemCaoNhat)</td>
+                        <td class="text-center">@HienThi.Diem(m.DiemThapNhat)</td>
+                        <td class="text-center">@m.SoGioi</td>
+                        <td class="text-center">@m.SoKha</td>
+                        <td class="text-center">@m.SoTrungBinh</td>
+                        <td class="text-center">@m.SoYeu</td>
+                        <td class="text-center">@m.SoKem</td>
+                        <td>
+                            <div class="progress" style="height: 16px;">
+                                <div class="progress-bar @HienThi.MauTyLe(m.TyLeTuTrungBinh)"
+                                     style="width: @m.TyLeTuTrungBinh.ToString(System.Globalization.CultureInfo.InvariantCulture)%">
+                                    @m.TyLeTuTrungBinh%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

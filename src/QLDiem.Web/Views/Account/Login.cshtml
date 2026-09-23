@@ -1,0 +1,49 @@
+@model DangNhapVM
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="trang-dang-nhap">
+    <div class="hop-dang-nhap">
+        <div class="text-center mb-4">
+            <h1 class="h4 fw-bold mb-1">Quản lý điểm học sinh</h1>
+            <p class="text-muted small mb-0">Trường THPT &ndash; theo Thông tư 22/2021/TT-BGDĐT</p>
+        </div>
+
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <div class="mb-3">
+                <label asp-for="TenDangNhap" class="form-label"></label>
+                <input asp-for="TenDangNhap" class="form-control" autofocus autocomplete="username" />
+                <span asp-validation-for="TenDangNhap" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MatKhau" class="form-label"></label>
+                <input asp-for="MatKhau" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="MatKhau" class="text-danger small"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="GhiNho" class="form-check-input" />
+                <label asp-for="GhiNho" class="form-check-label"></label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+        </form>
+
+        <hr class="my-4" />
+        <div class="small text-muted">
+            <div class="fw-semibold mb-1">Tài khoản dùng thử</div>
+            <div>Quản trị: <code>admin</code> / <code>Admin@@123</code></div>
+            <div>Giáo viên: <code>gv001</code> / <code>Abc@@123</code></div>
+            <div>Học sinh: <code>hs0001</code> / <code>Abc@@123</code></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

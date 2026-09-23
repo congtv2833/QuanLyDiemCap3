@@ -1,0 +1,17 @@
+# Chuan hoa xuong dong: luu LF trong repo, tra ve theo he dieu hanh khi checkout
+* text=auto
+
+*.cs      text diff=csharp
+*.cshtml  text
+*.csproj  text
+*.slnx    text
+*.json    text
+*.css     text
+*.js      text
+*.md      text
+
+# File nhi phan, khong dong cham
+*.png binary
+*.jpg binary
+*.ico binary
+*.bak binary

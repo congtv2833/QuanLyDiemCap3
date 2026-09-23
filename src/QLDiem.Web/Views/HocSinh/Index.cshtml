@@ -1,0 +1,108 @@
+@model List<HocSinh>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Học sinh";
+    int trang = ViewBag.Trang;
+    int tongSoTrang = ViewBag.TongSoTrang;
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Học sinh</h1>
+        <div class="text-muted small">Tổng cộng @ViewBag.TongSo học sinh</div>
+    </div>
+    @if (User.IsInRole(VaiTro.Admin))
+    {
+        <a class="btn btn-primary btn-sm" asp-action="Create">Thêm học sinh</a>
+    }
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Tên hoặc mã học sinh</label>
+            <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Lớp</label>
+            <select name="lopId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachLop">
+                <option value="">-- Tất cả các lớp --</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-outline-primary w-100">Tìm kiếm</button>
+        </div>
+    </form>
+</div>
+
+<div class="the">
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+            <thead>
+            <tr>
+                <th style="width: 100px;">Mã HS</th>
+                <th>Họ và tên</th>
+                <th style="width: 110px;">Ngày sinh</th>
+                <th style="width: 80px;">Giới tính</th>
+                <th style="width: 90px;">Lớp</th>
+                <th class="text-center" style="width: 100px;">Trạng thái</th>
+                <th class="text-end" style="width: 240px;"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var hs in Model)
+            {
+                <tr>
+                    <td>@hs.MaHocSinh</td>
+                    <td class="fw-semibold">@hs.HoTen</td>
+                    <td>@hs.NgaySinh.ToString("dd/MM/yyyy")</td>
+                    <td>@HienThi.TenGioiTinh(hs.GioiTinh)</td>
+                    <td>@hs.Lop.Ten</td>
+                    <td class="text-center">
+                        @if (hs.DangHoc)
+                        {
+                            <span class="nhan-xl xl-tot">Đang học</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Thôi học</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary"
+                           asp-controller="TraCuu" asp-action="HocBa" asp-route-id="@hs.Id">Kết quả</a>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@hs.Id">Sửa</a>
+                        @if (User.IsInRole(VaiTro.Admin))
+                        {
+                            <form asp-action="Delete" asp-route-id="@hs.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Xóa học sinh @hs.HoTen?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="7" class="text-muted text-center py-3">Không tìm thấy học sinh nào.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (tongSoTrang > 1)
+    {
+        <nav class="mt-3">
+            <ul class="pagination pagination-sm mb-0">
+                @for (int i = 1; i <= tongSoTrang; i++)
+                {
+                    <li class="page-item @(i == trang ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-trang="@i"
+                           asp-route-tuKhoa="@ViewBag.TuKhoa" asp-route-lopId="@ViewBag.LopId">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

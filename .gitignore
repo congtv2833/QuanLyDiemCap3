@@ -1,0 +1,33 @@
+# Thư mục build
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.sln.docstates
+*.slnx.user
+
+# File cơ sở dữ liệu cục bộ
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.db-shm
+*.db-wal
+
+# Cấu hình riêng của từng máy (có thể chứa chuỗi kết nối, mật khẩu)
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Khác
+*.log
+.DS_Store
+Thumbs.db

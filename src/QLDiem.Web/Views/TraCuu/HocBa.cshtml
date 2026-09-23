@@ -1,0 +1,137 @@
+@model HocBaDto
+@{
+    ViewData["Title"] = $"Kết quả học tập - {Model.HoTen}";
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Kết quả học tập</h1>
+        <div class="text-muted small">Theo Thông tư 22/2021/TT-BGDĐT</div>
+    </div>
+    <div class="khong-in d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm"
+           asp-action="ChiTiet" asp-route-id="@Model.HocSinhId" asp-route-hocKy="1">Xem chi tiết đầu điểm</a>
+        <button class="btn btn-outline-primary btn-sm" onclick="window.print()">In</button>
+    </div>
+</div>
+
+<div class="the mb-3">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="text-muted small">Họ và tên</div>
+            <div class="fw-semibold">@Model.HoTen</div>
+        </div>
+        <div class="col-md-2">
+            <div class="text-muted small">Mã học sinh</div>
+            <div class="fw-semibold">@Model.MaHocSinh</div>
+        </div>
+        <div class="col-md-2">
+            <div class="text-muted small">Ngày sinh</div>
+            <div class="fw-semibold">@Model.NgaySinh.ToString("dd/MM/yyyy")</div>
+        </div>
+        <div class="col-md-2">
+            <div class="text-muted small">Lớp</div>
+            <div class="fw-semibold">@Model.TenLop &ndash; @Model.TenNamHoc</div>
+        </div>
+        <div class="col-md-3">
+            <div class="text-muted small">Giáo viên chủ nhiệm</div>
+            <div class="fw-semibold">@(Model.GiaoVienChuNhiem ?? "-")</div>
+        </div>
+    </div>
+</div>
+
+<div class="the mb-3">
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle mb-0">
+            <thead>
+            <tr>
+                <th style="width: 46px;">TT</th>
+                <th>Môn học</th>
+                <th class="text-center" style="width: 120px;">Học kỳ I</th>
+                <th class="text-center" style="width: 120px;">Học kỳ II</th>
+                <th class="text-center" style="width: 120px;">Cả năm</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{ var stt = 1; }
+            @foreach (var mon in Model.CacMon.OrderBy(m => m.ThuTuHienThi))
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td>
+                        @mon.TenMon
+                        @if (mon.LoaiDanhGia == LoaiDanhGia.NhanXet)
+                        {
+                            <span class="badge text-bg-light border ms-1">nhận xét</span>
+                        }
+                    </td>
+
+                    @if (mon.LoaiDanhGia == LoaiDanhGia.DiemSo)
+                    {
+                        <td class="text-center">@HienThi.Diem(mon.DiemTrungBinhHocKyI)</td>
+                        <td class="text-center">@HienThi.Diem(mon.DiemTrungBinhHocKyII)</td>
+                        <td class="text-center fw-semibold">@HienThi.Diem(mon.DiemTrungBinhCaNam)</td>
+                    }
+                    else
+                    {
+                        <td class="text-center"><span class="@HienThi.CssKetQuaNhanXet(mon.NhanXetHocKyI)">@HienThi.KetQuaNhanXet(mon.NhanXetHocKyI)</span></td>
+                        <td class="text-center"><span class="@HienThi.CssKetQuaNhanXet(mon.NhanXetHocKyII)">@HienThi.KetQuaNhanXet(mon.NhanXetHocKyII)</span></td>
+                        <td class="text-center"><span class="@HienThi.CssKetQuaNhanXet(mon.NhanXetCaNam)">@HienThi.KetQuaNhanXet(mon.NhanXetCaNam)</span></td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="the h-100">
+            <h2 class="h6 fw-semibold mb-3">Xếp loại</h2>
+            <table class="table table-sm mb-0">
+                <tbody>
+                <tr>
+                    <td style="width: 45%;">Kết quả học tập học kỳ I</td>
+                    <td><span class="@HienThi.CssXepLoai(Model.XepLoaiHocKyI)">@HienThi.TenXepLoai(Model.XepLoaiHocKyI)</span></td>
+                </tr>
+                <tr>
+                    <td>Kết quả học tập học kỳ II</td>
+                    <td><span class="@HienThi.CssXepLoai(Model.XepLoaiHocKyII)">@HienThi.TenXepLoai(Model.XepLoaiHocKyII)</span></td>
+                </tr>
+                <tr>
+                    <td>Kết quả học tập cả năm</td>
+                    <td><span class="@HienThi.CssXepLoai(Model.XepLoaiCaNam)">@HienThi.TenXepLoai(Model.XepLoaiCaNam)</span></td>
+                </tr>
+                <tr>
+                    <td>Kết quả rèn luyện cả năm</td>
+                    <td><span class="@HienThi.CssXepLoai(Model.XepLoaiRenLuyen)">@HienThi.TenXepLoai(Model.XepLoaiRenLuyen)</span></td>
+                </tr>
+                <tr>
+                    <td>Danh hiệu</td>
+                    <td class="fw-semibold">@QuyCheDanhGia.TenDanhHieu(Model.DanhHieu)</td>
+                </tr>
+                </tbody>
+            </table>
+
+            @if (!Model.DuDieuKienTongKet)
+            {
+                <div class="alert alert-warning py-2 small mt-3 mb-0">
+                    Một số môn chưa đủ đầu điểm nên kết quả cả năm mới là tạm tính.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="the h-100">
+            <h2 class="h6 fw-semibold mb-3">Căn cứ xếp loại (Điều 9)</h2>
+            <ul class="small text-muted mb-0 ps-3">
+                <li><strong>Tốt:</strong> mọi môn nhận xét Đạt; mọi ĐTBm từ 6,5 trở lên, trong đó ít nhất 6 môn từ 8,0.</li>
+                <li><strong>Khá:</strong> mọi môn nhận xét Đạt; mọi ĐTBm từ 5,0 trở lên, trong đó ít nhất 6 môn từ 6,5.</li>
+                <li><strong>Đạt:</strong> nhiều nhất 1 môn nhận xét Chưa đạt; ít nhất 6 môn ĐTBm từ 5,0; không môn nào dưới 3,5.</li>
+                <li><strong>Chưa đạt:</strong> các trường hợp còn lại.</li>
+            </ul>
+        </div>
+    </div>
+</div>

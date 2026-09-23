@@ -1,0 +1,51 @@
+@model PhanCongGiangDay
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm phân công" : "Sửa phân công";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index" asp-route-lopId="@Model.LopId">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 560px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="NamHocId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Lớp</label>
+            <select asp-for="LopId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachLop">
+                <option value="">-- Chọn lớp --</option>
+            </select>
+            <span asp-validation-for="LopId" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Môn học</label>
+            <select asp-for="MonHocId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachMon">
+                <option value="">-- Chọn môn --</option>
+            </select>
+            <span asp-validation-for="MonHocId" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Giáo viên phụ trách</label>
+            <select asp-for="GiaoVienId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachGiaoVien">
+                <option value="">-- Chọn giáo viên --</option>
+            </select>
+            <span asp-validation-for="GiaoVienId" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index" asp-route-lopId="@Model.LopId">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,67 @@
+@model List<MonHoc>
+@{
+    ViewData["Title"] = "Môn học";
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Môn học</h1>
+        <div class="text-muted small">
+            Số ĐĐGtx mỗi học kỳ được suy ra từ số tiết trong năm:
+            tối đa 35 tiết &rarr; 2 đầu điểm, 36&ndash;70 tiết &rarr; 3 đầu điểm, trên 70 tiết &rarr; 4 đầu điểm.
+        </div>
+    </div>
+    <a class="btn btn-primary btn-sm" asp-action="Create">Thêm môn học</a>
+</div>
+
+<div class="the">
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+            <thead>
+            <tr>
+                <th style="width: 60px;">TT</th>
+                <th style="width: 100px;">Mã môn</th>
+                <th>Tên môn</th>
+                <th class="text-center">Số tiết/năm</th>
+                <th class="text-center">Hình thức đánh giá</th>
+                <th class="text-center">Số ĐĐGtx</th>
+                <th class="text-center">Bắt buộc</th>
+                <th class="text-end"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td class="text-center">@m.ThuTuHienThi</td>
+                    <td>@m.MaMon</td>
+                    <td class="fw-semibold">@m.TenMon</td>
+                    <td class="text-center">@m.SoTietNam</td>
+                    <td class="text-center">
+                        @if (m.LoaiDanhGia == LoaiDanhGia.DiemSo)
+                        {
+                            <span class="nhan-xl xl-kha">Nhận xét + điểm số</span>
+                        }
+                        else
+                        {
+                            <span class="nhan-xl xl-dat">Chỉ nhận xét</span>
+                        }
+                    </td>
+                    <td class="text-center fw-semibold">
+                        @(m.LoaiDanhGia == LoaiDanhGia.DiemSo ? m.SoDauDiemThuongXuyen.ToString() : "-")
+                    </td>
+                    <td class="text-center">@(m.BatBuoc ? "Có" : "Lựa chọn")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@m.Id">Sửa</a>
+                        <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('Xóa môn @m.TenMon?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

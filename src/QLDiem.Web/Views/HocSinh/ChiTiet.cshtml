@@ -1,0 +1,32 @@
+@model HocSinh
+@{
+    ViewData["Title"] = $"Hồ sơ {Model.HoTen}";
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>@Model.HoTen</h1>
+        <div class="text-muted small">@Model.MaHocSinh &middot; lớp @Model.Lop.Ten &middot; năm học @Model.Lop.NamHoc.Ten</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-sm btn-outline-primary"
+           asp-controller="TraCuu" asp-action="HocBa" asp-route-id="@Model.Id">Kết quả học tập</a>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Sửa hồ sơ</a>
+    </div>
+</div>
+
+<div class="the" style="max-width: 720px;">
+    <table class="table table-sm mb-0">
+        <tbody>
+        <tr><td style="width: 40%;">Ngày sinh</td><td>@Model.NgaySinh.ToString("dd/MM/yyyy")</td></tr>
+        <tr><td>Giới tính</td><td>@HienThi.TenGioiTinh(Model.GioiTinh)</td></tr>
+        <tr><td>Nơi sinh</td><td>@(Model.NoiSinh ?? "-")</td></tr>
+        <tr><td>Địa chỉ</td><td>@(Model.DiaChi ?? "-")</td></tr>
+        <tr><td>Điện thoại</td><td>@(Model.DienThoai ?? "-")</td></tr>
+        <tr><td>Email</td><td>@(Model.Email ?? "-")</td></tr>
+        <tr><td>Phụ huynh</td><td>@(Model.HoTenPhuHuynh ?? "-") @(Model.DienThoaiPhuHuynh is null ? "" : $"({Model.DienThoaiPhuHuynh})")</td></tr>
+        <tr><td>Giáo viên chủ nhiệm</td><td>@(Model.Lop.GiaoVienChuNhiem?.HoTen ?? "-")</td></tr>
+        <tr><td>Trạng thái</td><td>@(Model.DangHoc ? "Đang học" : "Thôi học")</td></tr>
+        </tbody>
+    </table>
+</div>

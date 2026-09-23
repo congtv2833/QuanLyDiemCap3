@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/QLDiem.Web/QLDiem.Web.csproj" />
+    <Project Path="src/QLDiem.Application/QLDiem.Application.csproj" />
+    <Project Path="src/QLDiem.Domain/QLDiem.Domain.csproj" />
+    <Project Path="src/QLDiem.Infrastructure/QLDiem.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/QLDiem.Tests/QLDiem.Tests.csproj" />
+  </Folder>
+</Solution>

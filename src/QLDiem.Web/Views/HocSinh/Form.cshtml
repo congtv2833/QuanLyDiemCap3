@@ -1,0 +1,97 @@
+@model HocSinh
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm học sinh" : "Sửa hồ sơ học sinh";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 820px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <h2 class="h6 fw-semibold mb-3">Thông tin học sinh</h2>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-3">
+                <label class="form-label">Mã học sinh</label>
+                <input asp-for="MaHocSinh" class="form-control" />
+                <span asp-validation-for="MaHocSinh" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-5">
+                <label class="form-label">Họ và tên</label>
+                <input asp-for="HoTen" class="form-control" />
+                <span asp-validation-for="HoTen" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Lớp</label>
+                <select asp-for="LopId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachLop"></select>
+                <span asp-validation-for="LopId" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-3">
+                <label class="form-label">Ngày sinh</label>
+                <input asp-for="NgaySinh" type="date" class="form-control" />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Giới tính</label>
+                <select asp-for="GioiTinh" class="form-select">
+                    <option value="1">Nam</option>
+                    <option value="2">Nữ</option>
+                    <option value="3">Khác</option>
+                </select>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Nơi sinh</label>
+                <input asp-for="NoiSinh" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Địa chỉ</label>
+                <input asp-for="DiaChi" class="form-control" />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Điện thoại</label>
+                <input asp-for="DienThoai" class="form-control" />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+        </div>
+
+        <h2 class="h6 fw-semibold mb-3 mt-4">Thông tin phụ huynh</h2>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Họ tên phụ huynh</label>
+                <input asp-for="HoTenPhuHuynh" class="form-control" />
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Điện thoại phụ huynh</label>
+                <input asp-for="DienThoaiPhuHuynh" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="DangHoc" class="form-check-input" />
+            <label asp-for="DangHoc" class="form-check-label">Đang theo học</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

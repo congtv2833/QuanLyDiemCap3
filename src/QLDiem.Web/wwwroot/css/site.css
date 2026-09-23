@@ -1,0 +1,199 @@
+:root {
+    --mau-chinh: #1d4ed8;
+    --mau-chinh-dam: #1e3a8a;
+    --mau-nen: #f4f6fb;
+    --mau-vien: #dfe3ed;
+    --chieu-cao-thanh-tren: 56px;
+    --rong-menu: 236px;
+}
+
+body {
+    background: var(--mau-nen);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.94rem;
+    color: #1f2937;
+}
+
+/* ----- Thanh trên ----- */
+.thanh-tren {
+    height: var(--chieu-cao-thanh-tren);
+    background: var(--mau-chinh-dam);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.thuong-hieu {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: .2px;
+}
+
+.thuong-hieu:hover { color: #dbeafe; }
+
+/* ----- Bố cục ----- */
+.khung-chinh {
+    display: flex;
+    align-items: flex-start;
+}
+
+.menu-ben {
+    width: var(--rong-menu);
+    flex: 0 0 var(--rong-menu);
+    background: #fff;
+    border-right: 1px solid var(--mau-vien);
+    min-height: calc(100vh - var(--chieu-cao-thanh-tren));
+    position: sticky;
+    top: var(--chieu-cao-thanh-tren);
+}
+
+.menu-ben .nav-link {
+    color: #374151;
+    border-radius: 0;
+    padding: .5rem 1rem;
+    font-size: .92rem;
+}
+
+.menu-ben .nav-link:hover { background: #eef2ff; color: var(--mau-chinh); }
+
+.menu-ben .nav-link.active {
+    background: #e0e7ff;
+    color: var(--mau-chinh-dam);
+    font-weight: 600;
+    border-left: 3px solid var(--mau-chinh);
+}
+
+.nhom-menu {
+    padding: .85rem 1rem .3rem;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #9ca3af;
+    font-weight: 700;
+}
+
+.vung-noi-dung {
+    flex: 1 1 auto;
+    padding: 1.25rem 1.5rem 3rem;
+    min-width: 0;
+}
+
+/* ----- Thành phần chung ----- */
+.tieu-de-trang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.tieu-de-trang h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.the {
+    background: #fff;
+    border: 1px solid var(--mau-vien);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+}
+
+.the-so-lieu {
+    background: #fff;
+    border: 1px solid var(--mau-vien);
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+    height: 100%;
+}
+
+.the-so-lieu .nhan {
+    font-size: .78rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.the-so-lieu .so {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--mau-chinh-dam);
+    line-height: 1.2;
+}
+
+.table thead th {
+    background: #eef2f8;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #4b5563;
+    border-bottom: 2px solid var(--mau-vien);
+    white-space: nowrap;
+}
+
+.table td, .table th { vertical-align: middle; }
+
+/* ----- Bảng nhập điểm ----- */
+.bang-diem input.o-diem {
+    width: 62px;
+    text-align: center;
+    padding: .2rem .25rem;
+    font-size: .9rem;
+}
+
+.bang-diem .cot-tx { background: #fbfdff; }
+.bang-diem .cot-gk { background: #fff8ed; }
+.bang-diem .cot-ck { background: #fdf2f8; }
+.bang-diem .cot-dtb { background: #eef7ee; font-weight: 600; }
+
+.bang-diem td, .bang-diem th { padding: .35rem .4rem; }
+
+.o-diem.khong-hop-le {
+    border-color: #dc2626;
+    background: #fef2f2;
+}
+
+/* ----- Nhãn xếp loại ----- */
+.nhan-xl { font-size: .78rem; font-weight: 600; padding: .25em .6em; border-radius: 999px; }
+.xl-tot { background: #dcfce7; color: #166534; }
+.xl-kha { background: #dbeafe; color: #1e40af; }
+.xl-dat { background: #fef9c3; color: #854d0e; }
+.xl-chua-dat { background: #fee2e2; color: #991b1b; }
+
+/* ----- Trang đăng nhập ----- */
+.trang-dang-nhap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    padding: 1rem;
+}
+
+.hop-dang-nhap {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 2rem;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .25);
+}
+
+/* ----- In ấn ----- */
+@media print {
+    .thanh-tren, .menu-ben, .khong-in { display: none !important; }
+    .vung-noi-dung { padding: 0; }
+    .the { border: none; }
+    body { background: #fff; }
+}
+
+@media (max-width: 991.98px) {
+    .menu-ben { position: fixed; }
+    .vung-noi-dung { padding: 1rem; }
+}

@@ -1,0 +1,259 @@
+@model ChonBangDiemVM
+@{
+    ViewData["Title"] = "Nhập điểm";
+    var bang = Model.BangDiem;
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Nhập điểm</h1>
+        <div class="text-muted small">
+            Số đầu điểm thường xuyên của mỗi môn do số tiết trong năm quyết định (Thông tư 22, Điều 6).
+        </div>
+    </div>
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Lớp</label>
+            <select name="lopId" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Chọn lớp --</option>
+                @foreach (var l in Model.DanhSachLop)
+                {
+                    <option value="@l.Id" selected="@(Model.LopId == l.Id)">@l.Ten</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Môn học</label>
+            <select name="monHocId" class="form-select" onchange="this.form.submit()" disabled="@(Model.LopId == null)">
+                <option value="">-- Chọn môn --</option>
+                @foreach (var m in Model.DanhSachMon)
+                {
+                    <option value="@m.Id" selected="@(Model.MonHocId == m.Id)">
+                        @m.TenMon@(m.LoaiDanhGia == LoaiDanhGia.NhanXet ? " (nhận xét)" : $" ({m.SoDauDiemThuongXuyen} ĐĐGtx)")
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Học kỳ</label>
+            <select name="hocKy" class="form-select" onchange="this.form.submit()">
+                <option value="1" selected="@(Model.HocKy == HocKy.HocKyI)">Học kỳ I</option>
+                <option value="2" selected="@(Model.HocKy == HocKy.HocKyII)">Học kỳ II</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-outline-primary w-100">Tải bảng điểm</button>
+        </div>
+    </form>
+</div>
+
+@if (Model.LopId is null || Model.MonHocId is null)
+{
+    <div class="the text-muted">Chọn lớp và môn học để bắt đầu nhập điểm.</div>
+}
+else if (bang is null)
+{
+    <div class="the text-muted">Không tìm thấy bảng điểm tương ứng.</div>
+}
+else if (bang.DanhSach.Count == 0)
+{
+    <div class="the text-muted">Lớp @bang.TenLop chưa có học sinh.</div>
+}
+else
+{
+    <form asp-action="Luu" method="post" id="formBangDiem">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="NamHocId" value="@bang.NamHocId" />
+        <input type="hidden" name="LopId" value="@bang.LopId" />
+        <input type="hidden" name="MonHocId" value="@bang.MonHocId" />
+        <input type="hidden" name="HocKy" value="@((int)bang.HocKy)" />
+
+        <div class="the">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                    <div class="fw-semibold">@bang.TenMon &ndash; Lớp @bang.TenLop</div>
+                    <div class="text-muted small">
+                        @QuyCheDanhGia.TenHocKy(bang.HocKy), năm học @bang.TenNamHoc &middot;
+                        @bang.DanhSach.Count học sinh
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu bảng điểm</button>
+            </div>
+
+            @if (bang.LoaiDanhGia == LoaiDanhGia.NhanXet)
+            {
+                <div class="alert alert-info py-2 small">
+                    Môn <strong>@bang.TenMon</strong> chỉ đánh giá bằng nhận xét (Đạt / Chưa đạt), không cho điểm số.
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered bang-diem">
+                        <thead>
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th style="width: 110px;">Mã HS</th>
+                            <th>Họ và tên</th>
+                            <th style="width: 160px;">Kết quả</th>
+                            <th>Nhận xét</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i < bang.DanhSach.Count; i++)
+                        {
+                            var d = bang.DanhSach[i];
+                            <tr>
+                                <td class="text-center">@(i + 1)</td>
+                                <td>
+                                    @d.MaHocSinh
+                                    <input type="hidden" name="DanhSach[@i].HocSinhId" value="@d.HocSinhId" />
+                                </td>
+                                <td>@d.HoTen</td>
+                                <td>
+                                    <select name="DanhSach[@i].KetQuaNhanXet" class="form-select form-select-sm">
+                                        <option value="">-- Chưa đánh giá --</option>
+                                        <option value="1" selected="@(d.KetQuaNhanXet == KetQuaNhanXet.Dat)">Đạt</option>
+                                        <option value="0" selected="@(d.KetQuaNhanXet == KetQuaNhanXet.ChuaDat)">Chưa đạt</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="DanhSach[@i].NoiDungNhanXet" maxlength="500"
+                                           class="form-control form-control-sm" value="@d.NoiDungNhanXet" />
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light border py-2 small mb-3">
+                    <strong>Cách tính:</strong> ĐTBmhk = (Tổng @bang.SoDauDiemThuongXuyen ĐĐGtx + 2 &times; ĐĐGgk + 3 &times; ĐĐGck)
+                    / (@bang.SoDauDiemThuongXuyen + 5). Nhập điểm theo thang 10, dùng dấu chấm cho phần thập phân (ví dụ 8.5).
+                    Để trống ô nếu muốn xóa đầu điểm đó.
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered bang-diem">
+                        <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 46px;">STT</th>
+                            <th rowspan="2" style="width: 100px;">Mã HS</th>
+                            <th rowspan="2">Họ và tên</th>
+                            <th colspan="@bang.SoDauDiemThuongXuyen" class="text-center cot-tx">ĐĐGtx (hệ số 1)</th>
+                            <th class="text-center cot-gk" style="width: 80px;">ĐĐGgk</th>
+                            <th class="text-center cot-ck" style="width: 80px;">ĐĐGck</th>
+                            <th class="text-center cot-dtb" style="width: 90px;">ĐTBmhk</th>
+                        </tr>
+                        <tr>
+                            @for (int j = 1; j <= bang.SoDauDiemThuongXuyen; j++)
+                            {
+                                <th class="text-center cot-tx" style="width: 70px;">@j</th>
+                            }
+                            <th class="text-center cot-gk">HS 2</th>
+                            <th class="text-center cot-ck">HS 3</th>
+                            <th class="text-center cot-dtb"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i < bang.DanhSach.Count; i++)
+                        {
+                            var d = bang.DanhSach[i];
+                            <tr>
+                                <td class="text-center">@(i + 1)</td>
+                                <td>
+                                    @d.MaHocSinh
+                                    <input type="hidden" name="DanhSach[@i].HocSinhId" value="@d.HocSinhId" />
+                                </td>
+                                <td>@d.HoTen</td>
+
+                                @for (int j = 0; j < bang.SoDauDiemThuongXuyen; j++)
+                                {
+                                    <td class="cot-tx text-center">
+                                        <input type="number" step="0.1" min="0" max="10"
+                                               class="form-control form-control-sm o-diem"
+                                               name="DanhSach[@i].DiemThuongXuyen[@j]"
+                                               value="@HienThi.DiemInput(d.DiemThuongXuyen.Length > j ? d.DiemThuongXuyen[j] : null)" />
+                                    </td>
+                                }
+
+                                <td class="cot-gk text-center">
+                                    <input type="number" step="0.1" min="0" max="10"
+                                           class="form-control form-control-sm o-diem"
+                                           name="DanhSach[@i].DiemGiuaKy" value="@HienThi.DiemInput(d.DiemGiuaKy)" />
+                                </td>
+                                <td class="cot-ck text-center">
+                                    <input type="number" step="0.1" min="0" max="10"
+                                           class="form-control form-control-sm o-diem"
+                                           name="DanhSach[@i].DiemCuoiKy" value="@HienThi.DiemInput(d.DiemCuoiKy)" />
+                                </td>
+                                <td class="cot-dtb text-center o-dtb">
+                                    @HienThi.Diem(d.DiemTrungBinh)
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-muted small mt-2">
+                    Cột ĐTBmhk được tính lại ngay khi bạn thay đổi điểm, và được ghi nhận chính thức sau khi bấm Lưu.
+                </div>
+            }
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Lưu bảng điểm</button>
+            </div>
+        </div>
+    </form>
+}
+
+@section Scripts {
+    <script>
+        // Tính lại ĐTBmhk ngay trên trình duyệt theo đúng công thức của Thông tư 22,
+        // giúp giáo viên thấy kết quả trước khi lưu. Giá trị chính thức vẫn do máy chủ tính.
+        (function () {
+            const form = document.getElementById('formBangDiem');
+            if (!form) return;
+
+            const soTx = @(bang?.SoDauDiemThuongXuyen ?? 0);
+            if (soTx === 0) return;
+
+            function tinhDong(tr) {
+                const oDiem = tr.querySelectorAll('input.o-diem');
+                if (oDiem.length !== soTx + 2) return;
+
+                let tongTx = 0, soTxDaNhap = 0;
+                for (let i = 0; i < soTx; i++) {
+                    const v = parseFloat(oDiem[i].value);
+                    if (!isNaN(v)) { tongTx += v; soTxDaNhap++; }
+                }
+
+                const gk = parseFloat(oDiem[soTx].value);
+                const ck = parseFloat(oDiem[soTx + 1].value);
+                const oKq = tr.querySelector('.o-dtb');
+
+                if (isNaN(gk) || isNaN(ck)) { oKq.textContent = '-'; return; }
+
+                const dtb = (tongTx + 2 * gk + 3 * ck) / (soTxDaNhap + 5);
+                oKq.textContent = dtb.toFixed(1).replace('.', ',');
+            }
+
+            form.addEventListener('input', function (e) {
+                if (!e.target.classList.contains('o-diem')) return;
+
+                const v = parseFloat(e.target.value);
+                e.target.classList.toggle('khong-hop-le',
+                    e.target.value !== '' && (isNaN(v) || v < 0 || v > 10));
+
+                tinhDong(e.target.closest('tr'));
+            });
+        })();
+    </script>
+}

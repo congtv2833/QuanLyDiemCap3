@@ -1,0 +1,79 @@
+@model MonHoc
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm môn học" : "Sửa môn học";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 620px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <label class="form-label">Mã môn</label>
+                <input asp-for="MaMon" class="form-control" placeholder="TOAN" />
+                <span asp-validation-for="MaMon" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-8">
+                <label class="form-label">Tên môn</label>
+                <input asp-for="TenMon" class="form-control" placeholder="Toán" />
+                <span asp-validation-for="TenMon" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <label class="form-label">Số tiết trong năm</label>
+                <input asp-for="SoTietNam" type="number" min="1" class="form-control" id="soTiet" />
+                <span asp-validation-for="SoTietNam" class="text-danger small"></span>
+                <div class="form-text">Số ĐĐGtx: <strong id="soDauDiem">-</strong> / học kỳ</div>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Hình thức đánh giá</label>
+                <select asp-for="LoaiDanhGia" class="form-select">
+                    <option value="1">Nhận xét kết hợp điểm số</option>
+                    <option value="2">Chỉ đánh giá bằng nhận xét</option>
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Thứ tự hiển thị</label>
+                <input asp-for="ThuTuHienThi" type="number" min="1" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="BatBuoc" class="form-check-input" />
+            <label asp-for="BatBuoc" class="form-check-label">Là môn học bắt buộc</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Hiển thị ngay số đầu điểm thường xuyên tương ứng với số tiết vừa nhập.
+        (function () {
+            const oSoTiet = document.getElementById('soTiet');
+            const oKetQua = document.getElementById('soDauDiem');
+
+            function capNhat() {
+                const soTiet = parseInt(oSoTiet.value, 10);
+                if (isNaN(soTiet) || soTiet <= 0) { oKetQua.textContent = '-'; return; }
+                oKetQua.textContent = soTiet <= 35 ? 2 : soTiet <= 70 ? 3 : 4;
+            }
+
+            oSoTiet.addEventListener('input', capNhat);
+            capNhat();
+        })();
+    </script>
+}

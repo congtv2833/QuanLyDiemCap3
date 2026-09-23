@@ -1,0 +1,126 @@
+@model ThongKeVM
+@{
+    ViewData["Title"] = "Thống kê theo lớp";
+    var tong = Model.TheoLop;
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Thống kê xếp loại theo lớp</h1>
+        <div class="text-muted small">Năm học @Model.TenNamHoc &ndash; @QuyCheDanhGia.TenHocKy(Model.HocKy)</div>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="TheoMon" asp-route-hocKy="@((int)Model.HocKy)">
+        Xem phổ điểm theo môn
+    </a>
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Học kỳ</label>
+            <select name="hocKy" class="form-select" onchange="this.form.submit()">
+                <option value="1" selected="@(Model.HocKy == HocKy.HocKyI)">Học kỳ I</option>
+                <option value="2" selected="@(Model.HocKy == HocKy.HocKyII)">Học kỳ II</option>
+                <option value="3" selected="@(Model.HocKy == HocKy.CaNam)">Cả năm</option>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Khối</label>
+            <select name="khoi" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Tất cả --</option>
+                <option value="10" selected="@(Model.Khoi == 10)">Khối 10</option>
+                <option value="11" selected="@(Model.Khoi == 11)">Khối 11</option>
+                <option value="12" selected="@(Model.Khoi == 12)">Khối 12</option>
+            </select>
+        </div>
+    </form>
+</div>
+
+@if (tong.Count == 0)
+{
+    <div class="the text-muted">Chưa có dữ liệu thống kê.</div>
+}
+else
+{
+    var siSo = tong.Sum(t => t.SiSo);
+    var tot = tong.Sum(t => t.SoTot);
+    var kha = tong.Sum(t => t.SoKha);
+    var dat = tong.Sum(t => t.SoDat);
+    var chuaDat = tong.Sum(t => t.SoChuaDat);
+
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-lg-3">
+            <div class="the-so-lieu"><div class="nhan">Tốt</div><div class="so">@tot</div>
+                <div class="small text-muted">@(siSo == 0 ? 0 : Math.Round(tot * 100.0 / siSo, 1))% tổng số</div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="the-so-lieu"><div class="nhan">Khá</div><div class="so">@kha</div>
+                <div class="small text-muted">@(siSo == 0 ? 0 : Math.Round(kha * 100.0 / siSo, 1))% tổng số</div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="the-so-lieu"><div class="nhan">Đạt</div><div class="so">@dat</div>
+                <div class="small text-muted">@(siSo == 0 ? 0 : Math.Round(dat * 100.0 / siSo, 1))% tổng số</div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="the-so-lieu"><div class="nhan">Chưa đạt</div><div class="so">@chuaDat</div>
+                <div class="small text-muted">@(siSo == 0 ? 0 : Math.Round(chuaDat * 100.0 / siSo, 1))% tổng số</div></div>
+        </div>
+    </div>
+
+    <div class="the">
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Lớp</th>
+                    <th class="text-center">Khối</th>
+                    <th class="text-center">Sĩ số</th>
+                    <th class="text-center">Tốt</th>
+                    <th class="text-center">Khá</th>
+                    <th class="text-center">Đạt</th>
+                    <th class="text-center">Chưa đạt</th>
+                    <th style="width: 200px;">Tỷ lệ từ Đạt trở lên</th>
+                    <th class="text-end"></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var l in tong)
+                {
+                    <tr>
+                        <td class="fw-semibold">@l.TenLop</td>
+                        <td class="text-center">@l.Khoi</td>
+                        <td class="text-center">@l.SiSo</td>
+                        <td class="text-center">@l.SoTot</td>
+                        <td class="text-center">@l.SoKha</td>
+                        <td class="text-center">@l.SoDat</td>
+                        <td class="text-center">@l.SoChuaDat</td>
+                        <td>
+                            <div class="progress" style="height: 16px;">
+                                <div class="progress-bar @HienThi.MauTyLe(l.TyLeTuDatTroLen)"
+                                     style="width: @l.TyLeTuDatTroLen.ToString(System.Globalization.CultureInfo.InvariantCulture)%">
+                                    @l.TyLeTuDatTroLen%
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="TongKetLop"
+                               asp-route-lopId="@l.LopId" asp-route-hocKy="@((int)Model.HocKy)">Bảng tổng kết</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                <tr class="fw-semibold">
+                    <td colspan="2">Tổng cộng</td>
+                    <td class="text-center">@siSo</td>
+                    <td class="text-center">@tot</td>
+                    <td class="text-center">@kha</td>
+                    <td class="text-center">@dat</td>
+                    <td class="text-center">@chuaDat</td>
+                    <td colspan="2"></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,50 @@
+@model NamHoc
+@{
+    var laThem = Model.Id == 0;
+    ViewData["Title"] = laThem ? "Thêm năm học" : "Sửa năm học";
+}
+
+<div class="tieu-de-trang">
+    <h1>@ViewData["Title"]</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 560px;">
+    <form asp-action="@(laThem ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Tên năm học</label>
+            <input asp-for="Ten" class="form-control" placeholder="Ví dụ: 2025-2026" />
+            <span asp-validation-for="Ten" class="text-danger small"></span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Ngày bắt đầu</label>
+                <input asp-for="NgayBatDau" type="date" class="form-control" />
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Ngày kết thúc</label>
+                <input asp-for="NgayKetThuc" type="date" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="DangHoatDong" class="form-check-input" />
+            <label asp-for="DangHoatDong" class="form-check-label">
+                Đặt làm năm học đang hoạt động
+            </label>
+            <div class="form-text">Chỉ một năm học được đánh dấu đang hoạt động tại một thời điểm.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
