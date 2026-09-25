@@ -25,10 +25,12 @@
             <div class="col-sm-6">
                 <label class="form-label">Ngày bắt đầu</label>
                 <input asp-for="NgayBatDau" type="date" class="form-control" />
+                <span asp-validation-for="NgayBatDau" class="text-danger small"></span>
             </div>
             <div class="col-sm-6">
                 <label class="form-label">Ngày kết thúc</label>
                 <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                <span asp-validation-for="NgayKetThuc" class="text-danger small"></span>
             </div>
         </div>
 

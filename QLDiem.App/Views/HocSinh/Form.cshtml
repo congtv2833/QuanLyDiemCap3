@@ -39,6 +39,7 @@
             <div class="col-sm-3">
                 <label class="form-label">Ngày sinh</label>
                 <input asp-for="NgaySinh" type="date" class="form-control" />
+                <span asp-validation-for="NgaySinh" class="text-danger small"></span>
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Giới tính</label>
@@ -51,6 +52,7 @@
             <div class="col-sm-6">
                 <label class="form-label">Nơi sinh</label>
                 <input asp-for="NoiSinh" class="form-control" />
+                <span asp-validation-for="NoiSinh" class="text-danger small"></span>
             </div>
         </div>
 
@@ -58,14 +60,17 @@
             <div class="col-sm-6">
                 <label class="form-label">Địa chỉ</label>
                 <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger small"></span>
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Điện thoại</label>
-                <input asp-for="DienThoai" class="form-control" />
+                <input asp-for="DienThoai" type="tel" maxlength="10" class="form-control" placeholder="0912345678" />
+                <span asp-validation-for="DienThoai" class="text-danger small"></span>
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" type="email" class="form-control" placeholder="tenban@gmail.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
         </div>
 
@@ -74,10 +79,12 @@
             <div class="col-sm-6">
                 <label class="form-label">Họ tên phụ huynh</label>
                 <input asp-for="HoTenPhuHuynh" class="form-control" />
+                <span asp-validation-for="HoTenPhuHuynh" class="text-danger small"></span>
             </div>
             <div class="col-sm-6">
                 <label class="form-label">Điện thoại phụ huynh</label>
-                <input asp-for="DienThoaiPhuHuynh" class="form-control" />
+                <input asp-for="DienThoaiPhuHuynh" type="tel" maxlength="10" class="form-control" placeholder="0912345678" />
+                <span asp-validation-for="DienThoaiPhuHuynh" class="text-danger small"></span>
             </div>
         </div>
 

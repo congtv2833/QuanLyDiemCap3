@@ -40,21 +40,25 @@
             <div class="col-sm-4">
                 <label class="form-label">Ngày sinh</label>
                 <input asp-for="NgaySinh" type="date" class="form-control" />
+                <span asp-validation-for="NgaySinh" class="text-danger small"></span>
             </div>
             <div class="col-sm-4">
                 <label class="form-label">Chuyên môn</label>
                 <input asp-for="ChuyenMon" class="form-control" placeholder="Toán" />
+                <span asp-validation-for="ChuyenMon" class="text-danger small"></span>
             </div>
         </div>
 
         <div class="row g-3 mb-3">
             <div class="col-sm-6">
                 <label class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" type="email" class="form-control" placeholder="gv001@thpt.edu.vn" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
             <div class="col-sm-6">
                 <label class="form-label">Điện thoại</label>
-                <input asp-for="DienThoai" class="form-control" />
+                <input asp-for="DienThoai" type="tel" maxlength="10" class="form-control" placeholder="0912345678" />
+                <span asp-validation-for="DienThoai" class="text-danger small"></span>
             </div>
         </div>
 
