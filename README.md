@@ -55,7 +55,43 @@ nhận số vào trả số ra. Nhờ vậy kiểm thử được trực tiếp,
 
 ## 3. Chạy dự án
 
-Yêu cầu: .NET 8 SDK (hoặc mới hơn) và SQL Server LocalDB — cả hai thường đi kèm Visual Studio.
+### Yêu cầu bắt buộc
+
+| Phần mềm | Bắt buộc | Cách có |
+|---|:--:|---|
+| .NET 8 SDK trở lên | ✔ | https://dotnet.microsoft.com/download |
+| **SQL Server** hoặc **SQL Server LocalDB** | ✔ | Xem mục 3.1 |
+
+Hệ thống dùng SQL Server, **không chạy được nếu máy chưa có**. Thiếu nó, ứng dụng
+báo lỗi ngay khi khởi động:
+
+```
+SqlException: A network-related or instance-specific error occurred while
+establishing a connection to SQL Server.
+```
+
+### 3.1. Cài SQL Server trên máy mới
+
+Kiểm tra máy đã có LocalDB chưa:
+
+```powershell
+sqllocaldb info
+```
+
+In ra `MSSQLLocalDB` nghĩa là đã có, bỏ qua bước cài.
+
+Nếu chưa có, chọn một trong hai cách:
+
+| Cách | Khi nào dùng |
+|---|---|
+| Cài Visual Studio, tích workload **ASP.NET and web development** | Máy dùng để lập trình — LocalDB đi kèm sẵn |
+| Tải **SQL Server Express**, trong trình cài chọn *Custom* → **LocalDB** (~60 MB) | Máy chỉ cần chạy ứng dụng |
+
+```powershell
+winget install Microsoft.SQLServer.2022.Express
+```
+
+### 3.2. Chạy
 
 ```bash
 git clone <repo>
@@ -68,9 +104,22 @@ Lần chạy đầu tiên, ứng dụng tự động:
 1. Áp dụng migration để tạo cơ sở dữ liệu `QLDiemHocSinh`
 2. Nạp dữ liệu mẫu: 1 năm học, 8 môn, 8 giáo viên, 2 lớp, 30 học sinh, 1.980 đầu điểm
 
-Đổi chuỗi kết nối tại `QLDiem.App/appsettings.json` nếu dùng SQL Server khác LocalDB.
-
 Trong Visual Studio: mở `QLDiem.slnx`, chuột phải **QLDiem** → *Set as Startup Project*, bấm F5.
+
+### 3.3. Dùng SQL Server khác LocalDB
+
+Sửa chuỗi kết nối trong `QLDiem.App/appsettings.json`, không phải sửa code:
+
+```json
+// SQL Server Express cài trên máy
+"QLDiem": "Server=.\\SQLEXPRESS;Database=QLDiemHocSinh;Trusted_Connection=True;TrustServerCertificate=True"
+
+// SQL Server có tài khoản riêng, hoặc máy chủ trong mạng
+"QLDiem": "Server=192.168.1.10;Database=QLDiemHocSinh;User Id=sa;Password=MatKhau;TrustServerCertificate=True"
+```
+
+Cơ sở dữ liệu **không nằm trong git** — mỗi máy tự tạo bản riêng khi chạy lần đầu.
+Vì vậy điểm nhập ở máy này sẽ không xuất hiện ở máy khác; git chỉ đồng bộ mã nguồn.
 
 ### Tài khoản dùng thử
 

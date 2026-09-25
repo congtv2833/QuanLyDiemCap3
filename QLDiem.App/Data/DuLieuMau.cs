@@ -50,6 +50,7 @@ public static class DuLieuMau
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
     {
+        // Tạo cơ sở dữ liệu và áp dụng toàn bộ migration nếu chưa có.
         db.Database.Migrate();
 
         TaoVaiTro(roleManager);

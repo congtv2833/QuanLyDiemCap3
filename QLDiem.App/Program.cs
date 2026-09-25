@@ -8,10 +8,13 @@ using QLDiem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var chuoiKetNoi = builder.Configuration.GetConnectionString("QLDiem")
-                  ?? throw new InvalidOperationException("Chưa cấu hình chuỗi kết nối 'QLDiem'.");
-
 // ----- Cơ sở dữ liệu -----
+// Hệ thống dùng SQL Server. Máy chạy ứng dụng cần có SQL Server hoặc LocalDB;
+// sửa chuỗi kết nối trong appsettings.json cho khớp với máy đó.
+var chuoiKetNoi = builder.Configuration.GetConnectionString("QLDiem")
+                  ?? throw new InvalidOperationException(
+                      "Chưa cấu hình chuỗi kết nối 'QLDiem' trong appsettings.json.");
+
 builder.Services.AddDbContext<QLDiemDbContext>(opt => opt.UseSqlServer(chuoiKetNoi));
 
 // ----- Đăng nhập, phân quyền -----

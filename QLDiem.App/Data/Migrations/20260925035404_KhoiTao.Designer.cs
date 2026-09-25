@@ -12,7 +12,7 @@ using QLDiem.Data;
 namespace QLDiem.Data.Migrations
 {
     [DbContext(typeof(QLDiemDbContext))]
-    [Migration("20260925014149_KhoiTao")]
+    [Migration("20260925035404_KhoiTao")]
     partial class KhoiTao
     {
         /// <inheritdoc />
