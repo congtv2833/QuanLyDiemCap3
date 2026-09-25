@@ -5,61 +5,80 @@ xây dựng theo **Thông tư 22/2021/TT-BGDĐT** của Bộ Giáo dục và Đ�
 
 ## 1. Công nghệ
 
-| Thành phần | Lựa chọn |
-|---|---|
-| Nền tảng | .NET 10 |
-| Giao diện | ASP.NET Core MVC + Razor Views + Bootstrap 5 |
-| Truy cập dữ liệu | Entity Framework Core 10 (Code First + Migrations) |
-| Cơ sở dữ liệu | SQL Server (LocalDB khi chạy thử) |
-| Xác thực, phân quyền | ASP.NET Core Identity (3 vai trò) |
-| Kiểm thử | xUnit |
+| Thành phần | Phiên bản | Vai trò |
+|---|---|---|
+| .NET | 8.0 (LTS) | Nền tảng |
+| ASP.NET Core MVC | 8.0 | Controller + Razor Views |
+| Entity Framework Core | 8.0.11 | ORM, Code First + Migrations |
+| SQL Server LocalDB | — | Cơ sở dữ liệu |
+| ASP.NET Core Identity | 8.0.11 | Đăng nhập, phân quyền 3 vai trò |
+| Bootstrap | 5.3 | Giao diện |
+| xUnit | 2.9 | 39 unit test cho quy chế tính điểm |
 
-## 2. Kiến trúc
+## 2. Cấu trúc dự án
 
-Dự án chia bốn tầng theo mô hình Clean Architecture, phụ thuộc luôn hướng vào trong:
+Một project ASP.NET Core MVC duy nhất, tổ chức theo thư mục chức năng:
 
 ```
-QLDiem.Web  ──►  QLDiem.Infrastructure  ──►  QLDiem.Application  ──►  QLDiem.Domain
-(MVC, views)     (EF Core, dịch vụ)          (DTO, interface)        (thực thể, quy chế)
+QLDiem/
+├── QLDiem.slnx
+├── QLDiem.App/                    ← project chính
+│   ├── Controllers/               (8 controller)
+│   ├── Models/
+│   │   ├── Enums.cs               HocKy, LoaiDiem, LoaiDanhGia, MucDanhGia, VaiTro...
+│   │   ├── ThucThe.cs             9 lớp thực thể ánh xạ xuống bảng CSDL
+│   │   ├── ApplicationUser.cs     tài khoản đăng nhập
+│   │   ├── NguoiDungClaims.cs     gắn GiaoVienId / HocSinhId vào phiếu đăng nhập
+│   │   ├── HienThi.cs             hàm hỗ trợ định dạng cho view
+│   │   └── ViewModels/            các lớp truyền dữ liệu giữa controller và view
+│   ├── Data/
+│   │   ├── QLDiemDbContext.cs     cấu hình bảng, khóa, ràng buộc
+│   │   ├── DuLieuMau.cs           dữ liệu mẫu tự nạp lần đầu chạy
+│   │   └── Migrations/            lịch sử thay đổi cấu trúc CSDL
+│   ├── Services/
+│   │   ├── QuyCheDanhGia.cs       ★ toàn bộ quy tắc Thông tư 22
+│   │   ├── DiemService.cs         nhập, sửa, tra cứu đầu điểm
+│   │   ├── KetQuaHocTapService.cs tổng kết, xếp loại, học bạ
+│   │   └── ThongKeService.cs      thống kê, phổ điểm
+│   ├── Views/                     29 file Razor
+│   ├── wwwroot/                   CSS, Bootstrap, jQuery
+│   ├── Program.cs                 cấu hình khởi động
+│   └── appsettings.json           chuỗi kết nối
+├── QLDiem.Tests/                  39 unit test
+└── docs/
+    └── product-backlog.md         Product Backlog và kế hoạch Sprint
 ```
 
-| Project | Vai trò |
-|---|---|
-| `src/QLDiem.Domain` | Thực thể, enum và **toàn bộ quy tắc của Thông tư 22** (`QuyChe/QuyCheDanhGia.cs`). Không phụ thuộc thư viện ngoài. |
-| `src/QLDiem.Application` | DTO và interface dịch vụ (`IDiemService`, `IKetQuaHocTapService`, `IThongKeService`). |
-| `src/QLDiem.Infrastructure` | `DbContext`, cấu hình bảng, migration, dữ liệu mẫu và phần hiện thực các dịch vụ. |
-| `src/QLDiem.Web` | Controller, view, xác thực và phân quyền. |
-| `tests/QLDiem.Tests` | 39 unit test cho quy chế tính điểm và xếp loại. |
-
-Điểm đáng lưu ý: các hàm tính điểm trong `QuyCheDanhGia` là **hàm thuần** - không chạm
-cơ sở dữ liệu - nên kiểm thử được trực tiếp, và mọi nơi trong hệ thống (nhập điểm, học bạ,
-thống kê) đều dùng chung một bộ quy tắc đó.
+Điểm đáng lưu ý: các hàm trong `QuyCheDanhGia` là **hàm thuần** — không chạm cơ sở dữ liệu,
+nhận số vào trả số ra. Nhờ vậy kiểm thử được trực tiếp, và mọi nơi trong hệ thống
+(nhập điểm, học bạ, thống kê) đều dùng chung một bộ quy tắc duy nhất.
 
 ## 3. Chạy dự án
 
-Yêu cầu: .NET 10 SDK và SQL Server LocalDB (đi kèm Visual Studio) hoặc SQL Server.
+Yêu cầu: .NET 8 SDK (hoặc mới hơn) và SQL Server LocalDB — cả hai thường đi kèm Visual Studio.
 
 ```bash
-git clone <repo> && cd QLDiem
-dotnet restore
-dotnet run --project src/QLDiem.Web
+git clone <repo>
+cd QLDiem
+dotnet run --project QLDiem.App
 ```
 
 Lần chạy đầu tiên, ứng dụng tự động:
 
-1. Áp dụng migration để tạo cơ sở dữ liệu `QLDiemHocSinh`.
-2. Nạp dữ liệu mẫu: 1 năm học, 16 môn học, 16 giáo viên, 4 lớp, 120 học sinh
-   và bảng điểm đầy đủ của cả hai học kỳ.
+1. Áp dụng migration để tạo cơ sở dữ liệu `QLDiemHocSinh`
+2. Nạp dữ liệu mẫu: 1 năm học, 8 môn, 8 giáo viên, 2 lớp, 30 học sinh, 1.980 đầu điểm
 
-Đổi chuỗi kết nối tại `src/QLDiem.Web/appsettings.json` nếu dùng SQL Server khác LocalDB.
+Đổi chuỗi kết nối tại `QLDiem.App/appsettings.json` nếu dùng SQL Server khác LocalDB.
+
+Trong Visual Studio: mở `QLDiem.slnx`, chuột phải **QLDiem** → *Set as Startup Project*, bấm F5.
 
 ### Tài khoản dùng thử
 
 | Vai trò | Tên đăng nhập | Mật khẩu | Phạm vi |
 |---|---|---|---|
 | Quản trị viên | `admin` | `Admin@123` | Toàn bộ chức năng |
-| Giáo viên | `gv001` … `gv016` | `Abc@123` | Nhập điểm các lớp - môn được phân công |
-| Học sinh | `hs0001` … `hs0005` | `Abc@123` | Xem kết quả học tập của chính mình |
+| Giáo viên | `gv001` … `gv008` | `Abc@123` | Nhập điểm lớp - môn được phân công |
+| Học sinh | `hs001` … `hs003` | `Abc@123` | Xem kết quả học tập của mình |
 
 ### Chạy kiểm thử
 
@@ -71,10 +90,10 @@ dotnet test
 
 ### 4.1. Hai nhóm môn học
 
-| Nhóm | Môn (cấp THPT) | Cách đánh giá |
+| Nhóm | Môn trong dự án | Cách đánh giá |
 |---|---|---|
-| Nhận xét **kết hợp** điểm số | Toán, Ngữ văn, Ngoại ngữ, Lịch sử, Vật lí, Hóa học, Sinh học, Địa lí, GDKT&PL, Tin học, Công nghệ, GDQP-AN | Có đầu điểm, thang 10 |
-| Chỉ **nhận xét** | Giáo dục thể chất, Âm nhạc, Mĩ thuật, HĐTN-HN, Nội dung giáo dục địa phương | Đạt / Chưa đạt |
+| Nhận xét **kết hợp** điểm số | Ngữ văn, Toán, Tiếng Anh, Vật lí, Hóa học, Lịch sử | Có đầu điểm, thang 10 |
+| Chỉ **nhận xét** | Giáo dục thể chất, HĐTN-HN | Đạt / Chưa đạt |
 
 ### 4.2. Đầu điểm trong một học kỳ (môn tính điểm)
 
@@ -86,11 +105,11 @@ dotnet test
 
 Số ĐĐGtx phụ thuộc số tiết của môn trong năm học (Điều 6 khoản 1 điểm b):
 
-| Số tiết / năm | Số ĐĐGtx mỗi học kỳ | Ví dụ |
+| Số tiết / năm | Số ĐĐGtx mỗi học kỳ | Môn trong dự án |
 |---|---|---|
-| Tối đa 35 | 2 | Giáo dục quốc phòng và an ninh |
-| 36 – 70 | 3 | Lịch sử, Vật lí, Hóa học, Địa lí |
-| Trên 70 | 4 | Toán, Ngữ văn, Tiếng Anh |
+| Tối đa 35 | 2 | — |
+| 36 – 70 | 3 | Vật lí, Hóa học (70), Lịch sử (52) |
+| Trên 70 | 4 | Ngữ văn, Toán, Tiếng Anh (105) |
 
 ### 4.3. Công thức
 
@@ -100,6 +119,9 @@ Số ĐĐGtx phụ thuộc số tiết của môn trong năm học (Điều 6 kh
 ```
 
 Mọi đầu điểm và điểm trung bình đều lấy đến **một chữ số thập phân**.
+
+Ví dụ kiểm chứng — môn Vật lí, học kỳ I: ĐĐGtx 5,9 – 5,1 – 4,9 | ĐĐGgk 6,2 | ĐĐGck 5,2
+→ (15,9 + 12,4 + 15,6) / 8 = 5,4875 → **5,5**
 
 ### 4.4. Xếp loại kết quả học tập (Điều 9 khoản 3)
 
@@ -114,10 +136,13 @@ Mọi đầu điểm và điểm trung bình đều lấy đến **một chữ s
 > không còn xếp loại Giỏi / Khá / Trung bình / Yếu / Kém như Thông tư 58 trước đây.
 > Cột "Bình quân (tham khảo)" trong bảng tổng kết chỉ dùng để sắp thứ hạng hiển thị.
 
+Vì tiêu chí đòi hỏi **ít nhất 6 môn** đạt ngưỡng, dữ liệu mẫu giữ đúng 6 môn tính điểm —
+bớt đi thì mọi học sinh đều rơi vào mức Chưa đạt và chức năng xếp loại mất ý nghĩa khi demo.
+
 ### 4.5. Danh hiệu cuối năm (Điều 15)
 
-- **Học sinh Xuất sắc**: rèn luyện Tốt, học tập Tốt và có ít nhất 6 môn ĐTBmcn từ 9,0.
-- **Học sinh Giỏi**: rèn luyện Tốt và học tập Tốt.
+- **Học sinh Xuất sắc**: rèn luyện Tốt, học tập Tốt và có ít nhất 6 môn ĐTBmcn từ 9,0
+- **Học sinh Giỏi**: rèn luyện Tốt và học tập Tốt
 
 ## 5. Chức năng theo vai trò
 
@@ -133,8 +158,6 @@ Mọi đầu điểm và điểm trung bình đều lấy đến **một chữ s
 
 ## 6. Cơ sở dữ liệu
 
-Các bảng chính:
-
 | Bảng | Nội dung |
 |---|---|
 | `NamHoc` | Năm học, đánh dấu năm đang hoạt động |
@@ -146,61 +169,43 @@ Các bảng chính:
 | `Diem` | **Từng đầu điểm**, lưu theo dòng |
 | `DanhGiaNhanXet` | Kết quả Đạt / Chưa đạt của môn chỉ nhận xét |
 | `KetQuaHocKy` | Bản ghi tổng kết học kỳ, cả năm |
+| `TaiKhoan`, `VaiTro`, … | Bảng của ASP.NET Core Identity |
 
 Bảng `Diem` lưu mỗi đầu điểm thành một dòng `(HocSinh, MonHoc, NamHoc, HocKy, LoaiDiem, ThuTu)`
 thay vì các cột cố định `diem_tx1, diem_tx2...`. Lý do: số ĐĐGtx thay đổi theo môn, và khi
-Bộ điều chỉnh quy định thì chỉ cần sửa quy tắc trong `QuyCheDanhGia`, không phải đổi lược đồ CSDL.
+Bộ điều chỉnh quy định thì chỉ cần sửa `QuyCheDanhGia`, không phải đổi lược đồ CSDL.
 Ràng buộc `UNIQUE` trên tổ hợp sáu cột đó ngăn trùng đầu điểm.
 
-## 7. Cấu trúc thư mục
+## 7. Một vài lựa chọn kỹ thuật
 
-```
-QLDiem/
-├── QLDiem.sln
-├── docs/
-│   └── product-backlog.md        # Product Backlog và kế hoạch Sprint
-├── src/
-│   ├── QLDiem.Domain/
-│   │   ├── Entities/             # NamHoc, Lop, HocSinh, MonHoc, Diem...
-│   │   ├── Enums/                # HocKy, LoaiDiem, LoaiDanhGia, MucDanhGia...
-│   │   └── QuyChe/               # QuyCheDanhGia.cs - quy tắc Thông tư 22
-│   ├── QLDiem.Application/
-│   │   ├── DTOs/
-│   │   └── Interfaces/
-│   ├── QLDiem.Infrastructure/
-│   │   ├── Data/                 # DbContext, Migrations, DuLieuMau
-│   │   ├── Identity/
-│   │   └── Services/             # DiemService, KetQuaHocTapService, ThongKeService
-│   └── QLDiem.Web/
-│       ├── Controllers/
-│       ├── Models/
-│       └── Views/
-└── tests/
-    └── QLDiem.Tests/
-```
+**Không dùng async/await.** Toàn bộ thao tác cơ sở dữ liệu viết đồng bộ (`ToList`, `SaveChanges`)
+cho dễ đọc. Ngoại lệ duy nhất là `AccountController`: ASP.NET Core Identity chỉ cung cấp
+API bất đồng bộ để kiểm tra mật khẩu và tạo phiếu đăng nhập.
+
+**GiaoVienId và HocSinhId lưu trong phiếu đăng nhập.** Xem `NguoiDungClaims.cs`.
+Nhờ vậy controller biết ngay người đang đăng nhập là giáo viên nào mà không phải truy vấn lại.
+
+**Culture bất biến khi nhận dữ liệu.** Điểm luôn nhập bằng dấu chấm (`8.5`). Nếu để culture
+tiếng Việt, dấu chấm bị hiểu là ký tự phân nhóm hàng nghìn và `8.5` thành `85`.
+Phần hiển thị dấu phẩy thập phân xử lý riêng trong `HienThi.Diem`.
 
 ## 8. Lệnh thường dùng
 
 ```bash
-dotnet build                                  # Biên dịch toàn bộ
-dotnet test                                   # Chạy unit test
-dotnet run --project src/QLDiem.Web           # Chạy ứng dụng
+dotnet build                              # Biên dịch
+dotnet test                               # Chạy 39 unit test
+dotnet run --project QLDiem.App           # Chạy ứng dụng
 
-# Tạo migration mới sau khi đổi thực thể
-dotnet dotnet-ef migrations add <TenMigration> \
-  --project src/QLDiem.Infrastructure \
-  --startup-project src/QLDiem.Web \
-  --output-dir Data/Migrations
+# Tạo migration sau khi sửa thực thể
+dotnet dotnet-ef migrations add <TenMigration> --project QLDiem.App --output-dir Data/Migrations
 
 # Áp dụng migration
-dotnet dotnet-ef database update \
-  --project src/QLDiem.Infrastructure \
-  --startup-project src/QLDiem.Web
+dotnet dotnet-ef database update --project QLDiem.App
 ```
 
 ## 9. Căn cứ pháp lý
 
 - Thông tư 22/2021/TT-BGDĐT ngày 20/7/2021 quy định về đánh giá học sinh trung học cơ sở
-  và trung học phổ thông.
+  và trung học phổ thông
 - Thông tư 32/2018/TT-BGDĐT ban hành Chương trình giáo dục phổ thông 2018
-  (danh mục môn học và số tiết).
+  (danh mục môn học và số tiết)

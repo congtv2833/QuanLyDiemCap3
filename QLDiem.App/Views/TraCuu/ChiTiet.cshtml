@@ -1,0 +1,72 @@
+@model List<ChiTietDiemMonVM>
+@{
+    var hs = (HocSinh)ViewBag.HocSinh;
+    var hocKy = (HocKy)ViewBag.HocKy;
+    ViewData["Title"] = $"Chi tiết đầu điểm - {hs.HoTen}";
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Chi tiết đầu điểm</h1>
+        <div class="text-muted small">
+            @hs.HoTen (@hs.MaHocSinh) &ndash; lớp @hs.Lop.Ten &middot; @QuyCheDanhGia.TenHocKy(hocKy)
+        </div>
+    </div>
+    <div class="khong-in d-flex gap-2">
+        <a class="btn btn-sm @(hocKy == HocKy.HocKyI ? "btn-primary" : "btn-outline-primary")"
+           asp-action="ChiTiet" asp-route-id="@hs.Id" asp-route-hocKy="1">Học kỳ I</a>
+        <a class="btn btn-sm @(hocKy == HocKy.HocKyII ? "btn-primary" : "btn-outline-primary")"
+           asp-action="ChiTiet" asp-route-id="@hs.Id" asp-route-hocKy="2">Học kỳ II</a>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="HocBa" asp-route-id="@hs.Id">Kết quả học tập</a>
+    </div>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="the text-muted">Chưa có điểm nào trong học kỳ này.</div>
+}
+else
+{
+    <div class="the">
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Môn học</th>
+                    <th class="cot-tx">ĐĐGtx (hệ số 1)</th>
+                    <th class="text-center cot-gk" style="width: 100px;">ĐĐGgk<br /><span class="fw-normal small">hệ số 2</span></th>
+                    <th class="text-center cot-ck" style="width: 100px;">ĐĐGck<br /><span class="fw-normal small">hệ số 3</span></th>
+                    <th class="text-center cot-dtb" style="width: 100px;">ĐTBmhk</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var mon in Model)
+                {
+                    <tr>
+                        <td>@mon.TenMon</td>
+                        <td class="cot-tx">
+                            @if (mon.DiemThuongXuyen.Count == 0)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else
+                            {
+                                @foreach (var d in mon.DiemThuongXuyen)
+                                {
+                                    <span class="badge text-bg-light border me-1">@HienThi.Diem(d)</span>
+                                }
+                            }
+                        </td>
+                        <td class="text-center cot-gk">@HienThi.Diem(mon.DiemGiuaKy)</td>
+                        <td class="text-center cot-ck">@HienThi.Diem(mon.DiemCuoiKy)</td>
+                        <td class="text-center cot-dtb">@HienThi.Diem(mon.DiemTrungBinh)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small mt-2">
+            Các môn chỉ đánh giá bằng nhận xét không xuất hiện ở bảng này; xem kết quả Đạt / Chưa đạt ở trang Kết quả học tập.
+        </div>
+    </div>
+}
