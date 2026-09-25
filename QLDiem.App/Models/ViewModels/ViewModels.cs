@@ -284,3 +284,60 @@ public class ErrorViewModel
     public string? RequestId { get; set; }
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }
+
+// ---------- Quản lý tài khoản ----------
+
+/// <summary>Một dòng trong danh sách tài khoản.</summary>
+public class TaiKhoanVM
+{
+    public string Id { get; set; } = string.Empty;
+    public string TenDangNhap { get; set; } = string.Empty;
+    public string HoTen { get; set; } = string.Empty;
+    public string VaiTro { get; set; } = string.Empty;
+
+    /// <summary>Hồ sơ giáo viên hoặc học sinh mà tài khoản này gắn tới.</summary>
+    public string? HoSoLienKet { get; set; }
+
+    public bool DangHoatDong { get; set; }
+    public bool DangBiKhoa { get; set; }
+}
+
+/// <summary>Dữ liệu tạo tài khoản mới.</summary>
+public class TaoTaiKhoanVM
+{
+    [Display(Name = "Tên đăng nhập")]
+    [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập.")]
+    [RegularExpression(@"^[a-z0-9._-]{3,50}$",
+        ErrorMessage = "Tên đăng nhập chỉ gồm chữ thường, số và các ký tự . _ - ; độ dài 3 đến 50.")]
+    public string TenDangNhap { get; set; } = string.Empty;
+
+    [Display(Name = "Họ và tên")]
+    [Required(ErrorMessage = "Vui lòng nhập họ và tên.")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "Họ và tên phải từ 2 đến 100 ký tự.")]
+    public string HoTen { get; set; } = string.Empty;
+
+    [Display(Name = "Vai trò")]
+    [Required(ErrorMessage = "Vui lòng chọn vai trò.")]
+    public string VaiTro { get; set; } = Models.VaiTro.GiaoVien;
+
+    [Display(Name = "Hồ sơ giáo viên")]
+    public int? GiaoVienId { get; set; }
+
+    [Display(Name = "Hồ sơ học sinh")]
+    public int? HocSinhId { get; set; }
+
+    [Display(Name = "Email")]
+    [EmailAddress(ErrorMessage = "Email không đúng định dạng.")]
+    public string? Email { get; set; }
+
+    [Display(Name = "Mật khẩu")]
+    [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
+    [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự.")]
+    [DataType(DataType.Password)]
+    public string MatKhau { get; set; } = string.Empty;
+
+    [Display(Name = "Xác nhận mật khẩu")]
+    [DataType(DataType.Password)]
+    [Compare(nameof(MatKhau), ErrorMessage = "Xác nhận mật khẩu không khớp.")]
+    public string XacNhanMatKhau { get; set; } = string.Empty;
+}

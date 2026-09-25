@@ -46,6 +46,7 @@ public class MonHocController : Controller
         if (id != model.Id) return BadRequest();
 
         KiemTra(model, id);
+        KiemTraThayDoiAnhHuongDenDiem(model, id);
         if (!ModelState.IsValid) return View("Form", model);
 
         _db.Entry(model).State = EntityState.Modified;
@@ -71,6 +72,39 @@ public class MonHocController : Controller
         _db.SaveChanges();
         TempData["ThanhCong"] = "Đã xóa môn học.";
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>
+    /// Chặn những thay đổi làm hỏng dữ liệu điểm đã nhập:
+    /// đổi hình thức đánh giá, hoặc giảm số tiết khiến số ĐĐGtx ít đi so với điểm đang có.
+    /// </summary>
+    private void KiemTraThayDoiAnhHuongDenDiem(MonHoc model, int id)
+    {
+        var goc = _db.MonHocs.AsNoTracking().FirstOrDefault(m => m.Id == id);
+        if (goc == null) return;
+
+        bool daCoDiem = _db.Diems.Any(d => d.MonHocId == id);
+        bool daCoNhanXet = _db.DanhGiaNhanXets.Any(n => n.MonHocId == id);
+
+        if (goc.LoaiDanhGia != model.LoaiDanhGia && (daCoDiem || daCoNhanXet))
+        {
+            ModelState.AddModelError(nameof(MonHoc.LoaiDanhGia),
+                "Không đổi được hình thức đánh giá vì môn này đã có dữ liệu. Hãy xóa hết điểm hoặc nhận xét trước.");
+        }
+
+        if (!daCoDiem) return;
+
+        int soTxMoi = model.SoDauDiemThuongXuyen;
+        int thuTuLonNhat = _db.Diems
+            .Where(d => d.MonHocId == id && d.LoaiDiem == LoaiDiem.ThuongXuyen)
+            .Max(d => (int?)d.ThuTu) ?? 0;
+
+        if (thuTuLonNhat > soTxMoi)
+        {
+            ModelState.AddModelError(nameof(MonHoc.SoTietNam),
+                $"Số tiết mới chỉ cho phép {soTxMoi} đầu điểm thường xuyên, " +
+                $"nhưng môn này đã có điểm ở cột thứ {thuTuLonNhat}. Hãy xóa các cột điểm thừa trước.");
+        }
     }
 
     private void KiemTra(MonHoc model, int idHienTai)

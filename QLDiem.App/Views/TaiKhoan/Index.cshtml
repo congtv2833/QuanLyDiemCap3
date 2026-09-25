@@ -1,0 +1,118 @@
+@model List<TaiKhoanVM>
+@{
+    ViewData["Title"] = "Tài khoản";
+    string matKhauMacDinh = ViewBag.MatKhauMacDinh;
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Quản lý tài khoản</h1>
+        <div class="text-muted small">
+            Cấp tài khoản đăng nhập cho giáo viên và học sinh. Mỗi hồ sơ chỉ gắn được một tài khoản.
+        </div>
+    </div>
+    <a class="btn btn-primary btn-sm" asp-action="Create">Cấp tài khoản mới</a>
+</div>
+
+<div class="the mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-4">
+            <label class="form-label mb-1">Tên đăng nhập hoặc họ tên</label>
+            <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <label class="form-label mb-1">Vai trò</label>
+            <select name="vaiTro" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var vt in VaiTro.TatCa)
+                {
+                    <option value="@vt" selected="@((string?)ViewBag.VaiTro == vt)">@VaiTro.TenHienThi(vt)</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-outline-primary w-100">Tìm kiếm</button>
+        </div>
+    </form>
+</div>
+
+<div class="the">
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+            <thead>
+            <tr>
+                <th style="width: 130px;">Tên đăng nhập</th>
+                <th>Họ và tên</th>
+                <th style="width: 120px;">Vai trò</th>
+                <th>Hồ sơ liên kết</th>
+                <th class="text-center" style="width: 110px;">Trạng thái</th>
+                <th class="text-end" style="width: 310px;"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var tk in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@tk.TenDangNhap</td>
+                    <td>@tk.HoTen</td>
+                    <td>@VaiTro.TenHienThi(tk.VaiTro)</td>
+                    <td>
+                        @if (tk.HoSoLienKet is null)
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                        else
+                        {
+                            @tk.HoSoLienKet
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (!tk.DangHoatDong)
+                        {
+                            <span class="nhan-xl xl-chua-dat">Đã khóa</span>
+                        }
+                        else if (tk.DangBiKhoa)
+                        {
+                            <span class="nhan-xl xl-dat">Tạm khóa</span>
+                        }
+                        else
+                        {
+                            <span class="nhan-xl xl-tot">Hoạt động</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <form asp-action="DatLaiMatKhau" method="post" class="d-inline"
+                              onsubmit="return confirm('Đặt lại mật khẩu của @tk.TenDangNhap về @matKhauMacDinh?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@tk.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Đặt lại mật khẩu</button>
+                        </form>
+                        <form asp-action="DoiTrangThai" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@tk.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                @(tk.DangHoatDong ? "Khóa" : "Mở khóa")
+                            </button>
+                        </form>
+                        <form asp-action="Delete" method="post" class="d-inline"
+                              onsubmit="return confirm('Xóa tài khoản @tk.TenDangNhap?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@tk.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="text-muted text-center py-3">Không tìm thấy tài khoản nào.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-muted small mt-3">
+        Mật khẩu mặc định khi cấp mới hoặc đặt lại: <code>@matKhauMacDinh</code>.
+        Người dùng nên đổi ngay sau lần đăng nhập đầu tiên tại mục <strong>Đổi mật khẩu</strong>.
+    </div>
+</div>

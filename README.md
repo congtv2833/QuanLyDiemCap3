@@ -123,11 +123,35 @@ Vì vậy điểm nhập ở máy này sẽ không xuất hiện ở máy khác;
 
 ### Tài khoản dùng thử
 
+Bộ dữ liệu mẫu tạo sẵn 12 tài khoản:
+
 | Vai trò | Tên đăng nhập | Mật khẩu | Phạm vi |
 |---|---|---|---|
 | Quản trị viên | `admin` | `Admin@123` | Toàn bộ chức năng |
 | Giáo viên | `gv001` … `gv008` | `Abc@123` | Nhập điểm lớp - môn được phân công |
 | Học sinh | `hs001` … `hs003` | `Abc@123` | Xem kết quả học tập của mình |
+
+Mỗi giáo viên gắn với một môn: `gv001` dạy Ngữ văn, `gv002` Toán, `gv003` Tiếng Anh,
+`gv004` Vật lí, `gv005` Hóa học, `gv006` Lịch sử, `gv007` Giáo dục thể chất,
+`gv008` Hoạt động trải nghiệm. Đăng nhập bằng tài khoản nào thì màn hình **Nhập điểm**
+chỉ hiện đúng môn của người đó.
+
+### Quản lý tài khoản
+
+Đăng nhập bằng `admin`, vào menu **Hệ thống → Tài khoản**. Tại đây quản trị viên:
+
+| Thao tác | Ghi chú |
+|---|---|
+| Cấp tài khoản mới | Chọn vai trò, gắn với hồ sơ giáo viên hoặc học sinh có sẵn |
+| Đặt lại mật khẩu | Về `Abc@123`, đồng thời gỡ trạng thái tạm khóa do đăng nhập sai nhiều lần |
+| Khóa / mở khóa | Tài khoản bị khóa không đăng nhập được |
+| Xóa tài khoản | Hồ sơ giáo viên, học sinh vẫn giữ nguyên |
+
+Ràng buộc: mỗi hồ sơ chỉ gắn được một tài khoản, ô chọn chỉ hiện những hồ sơ chưa có
+tài khoản. Không tự khóa hoặc tự xóa tài khoản đang đăng nhập, và không xóa được
+quản trị viên cuối cùng.
+
+Người dùng tự đổi mật khẩu ở menu tên mình (góc trên bên phải) → **Đổi mật khẩu**.
 
 ### Chạy kiểm thử
 
@@ -198,6 +222,7 @@ bớt đi thì mọi học sinh đều rơi vào mức Chưa đạt và chức n
 | Chức năng | Quản trị | Giáo viên | Học sinh |
 |---|:--:|:--:|:--:|
 | Quản lý năm học, lớp, môn học, phân công giảng dạy | ✔ | | |
+| Quản lý tài khoản đăng nhập | ✔ | | |
 | Quản lý hồ sơ giáo viên | ✔ | | |
 | Quản lý hồ sơ học sinh | ✔ | Xem, sửa | |
 | Nhập, sửa điểm | Mọi lớp | Lớp - môn được phân công | |

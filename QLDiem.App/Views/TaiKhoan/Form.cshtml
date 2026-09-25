@@ -1,0 +1,100 @@
+@model TaoTaiKhoanVM
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Cấp tài khoản";
+}
+
+<div class="tieu-de-trang">
+    <h1>Cấp tài khoản mới</h1>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Quay lại</a>
+</div>
+
+<div class="the" style="max-width: 680px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select asp-for="VaiTro" class="form-select" id="chonVaiTro">
+                <option value="GiaoVien">Giáo viên</option>
+                <option value="HocSinh">Học sinh</option>
+                <option value="Admin">Quản trị viên</option>
+            </select>
+            <span asp-validation-for="VaiTro" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3" id="khungGiaoVien">
+            <label class="form-label">Hồ sơ giáo viên</label>
+            <select asp-for="GiaoVienId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachGiaoVien">
+                <option value="">-- Chọn giáo viên --</option>
+            </select>
+            <div class="form-text">Chỉ hiện giáo viên đang công tác và chưa có tài khoản.</div>
+            <span asp-validation-for="GiaoVienId" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3" id="khungHocSinh">
+            <label class="form-label">Hồ sơ học sinh</label>
+            <select asp-for="HocSinhId" class="form-select" asp-items="(SelectList)ViewBag.DanhSachHocSinh">
+                <option value="">-- Chọn học sinh --</option>
+            </select>
+            <div class="form-text">Chỉ hiện học sinh đang theo học và chưa có tài khoản.</div>
+            <span asp-validation-for="HocSinhId" class="text-danger small"></span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-5">
+                <label class="form-label">Tên đăng nhập</label>
+                <input asp-for="TenDangNhap" class="form-control" placeholder="gv009" />
+                <span asp-validation-for="TenDangNhap" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-7">
+                <label class="form-label">Họ và tên</label>
+                <input asp-for="HoTen" class="form-control" />
+                <span asp-validation-for="HoTen" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email (không bắt buộc)</label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="tenban@thpt.edu.vn" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label">Mật khẩu</label>
+                <input asp-for="MatKhau" class="form-control" />
+                <span asp-validation-for="MatKhau" class="text-danger small"></span>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Xác nhận mật khẩu</label>
+                <input asp-for="XacNhanMatKhau" class="form-control" />
+                <span asp-validation-for="XacNhanMatKhau" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+        <a class="btn btn-link" asp-action="Index">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Chỉ hiện ô chọn hồ sơ tương ứng với vai trò đang chọn.
+        (function () {
+            const chon = document.getElementById('chonVaiTro');
+            const khungGV = document.getElementById('khungGiaoVien');
+            const khungHS = document.getElementById('khungHocSinh');
+
+            function capNhat() {
+                khungGV.style.display = chon.value === 'GiaoVien' ? '' : 'none';
+                khungHS.style.display = chon.value === 'HocSinh' ? '' : 'none';
+            }
+
+            chon.addEventListener('change', capNhat);
+            capNhat();
+        })();
+    </script>
+}

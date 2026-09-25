@@ -74,6 +74,16 @@ public class LopController : Controller
         if (id != model.Id) return BadRequest();
 
         KiemTra(model, id);
+
+        // Điểm được lưu kèm năm học, đổi năm học của lớp sẽ khiến điểm cũ lạc khỏi lớp.
+        var goc = _db.Lops.AsNoTracking().FirstOrDefault(l => l.Id == id);
+        if (goc != null && goc.NamHocId != model.NamHocId
+            && _db.Diems.Any(d => d.HocSinh.LopId == id))
+        {
+            ModelState.AddModelError(nameof(Lop.NamHocId),
+                "Không đổi được năm học vì lớp này đã có điểm.");
+        }
+
         if (!ModelState.IsValid)
         {
             NapDanhMuc(model.GiaoVienChuNhiemId);
