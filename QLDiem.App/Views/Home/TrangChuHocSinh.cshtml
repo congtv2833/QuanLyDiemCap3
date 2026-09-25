@@ -1,0 +1,126 @@
+@model HocBaVM
+@{
+    ViewData["Title"] = "Trang chủ";
+
+    var monTinhDiem = Model.CacMon
+        .Where(m => m.LoaiDanhGia == LoaiDanhGia.DiemSo && m.DiemTrungBinhCaNam != null)
+        .ToList();
+}
+
+<div class="tieu-de-trang">
+    <div>
+        <h1>Chào @Model.HoTen</h1>
+        <div class="text-muted small">
+            Lớp @Model.TenLop &middot; năm học @Model.TenNamHoc
+            @if (Model.GiaoVienChuNhiem is not null)
+            {
+                <text>&middot; GVCN: @Model.GiaoVienChuNhiem</text>
+            }
+        </div>
+    </div>
+    <a class="btn btn-primary btn-sm" asp-controller="TraCuu" asp-action="HocBa" asp-route-id="@Model.HocSinhId">
+        Xem bảng điểm đầy đủ
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="the-so-lieu">
+            <div class="nhan">Học kỳ I</div>
+            <div class="mt-2"><span class="@HienThi.CssXepLoai(Model.XepLoaiHocKyI)">@HienThi.TenXepLoai(Model.XepLoaiHocKyI)</span></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="the-so-lieu">
+            <div class="nhan">Học kỳ II</div>
+            <div class="mt-2"><span class="@HienThi.CssXepLoai(Model.XepLoaiHocKyII)">@HienThi.TenXepLoai(Model.XepLoaiHocKyII)</span></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="the-so-lieu">
+            <div class="nhan">Cả năm</div>
+            <div class="mt-2"><span class="@HienThi.CssXepLoai(Model.XepLoaiCaNam)">@HienThi.TenXepLoai(Model.XepLoaiCaNam)</span></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="the-so-lieu">
+            <div class="nhan">Danh hiệu</div>
+            <div class="so" style="font-size: 1.05rem; padding-top: .4rem;">
+                @QuyCheDanhGia.TenDanhHieu(Model.DanhHieu)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="the h-100">
+            <h2 class="h6 fw-semibold mb-3">Điểm trung bình cả năm từng môn</h2>
+
+            @if (monTinhDiem.Count == 0)
+            {
+                <p class="text-muted mb-0">Chưa đủ điểm để tính trung bình cả năm.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Môn học</th>
+                            <th class="text-center" style="width: 100px;">HK I</th>
+                            <th class="text-center" style="width: 100px;">HK II</th>
+                            <th class="text-center" style="width: 100px;">Cả năm</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var mon in monTinhDiem.OrderBy(m => m.ThuTuHienThi))
+                        {
+                            <tr>
+                                <td>@mon.TenMon</td>
+                                <td class="text-center">@HienThi.Diem(mon.DiemTrungBinhHocKyI)</td>
+                                <td class="text-center">@HienThi.Diem(mon.DiemTrungBinhHocKyII)</td>
+                                <td class="text-center fw-semibold">@HienThi.Diem(mon.DiemTrungBinhCaNam)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="the h-100">
+            <h2 class="h6 fw-semibold mb-3">Các môn đánh giá bằng nhận xét</h2>
+
+            <table class="table table-sm mb-3">
+                <tbody>
+                @foreach (var mon in Model.CacMon.Where(m => m.LoaiDanhGia == LoaiDanhGia.NhanXet).OrderBy(m => m.ThuTuHienThi))
+                {
+                    <tr>
+                        <td>@mon.TenMon</td>
+                        <td class="text-end">
+                            <span class="@HienThi.CssKetQuaNhanXet(mon.NhanXetCaNam)">@HienThi.KetQuaNhanXet(mon.NhanXetCaNam)</span>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <div class="d-grid gap-2">
+                <a class="btn btn-outline-primary btn-sm"
+                   asp-controller="TraCuu" asp-action="ChiTiet" asp-route-id="@Model.HocSinhId" asp-route-hocKy="1">
+                    Xem chi tiết từng đầu điểm
+                </a>
+            </div>
+
+            @if (!Model.DuDieuKienTongKet)
+            {
+                <div class="alert alert-warning py-2 small mt-3 mb-0">
+                    Một số môn chưa đủ đầu điểm nên kết quả cả năm mới là tạm tính.
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -224,10 +224,12 @@ bớt đi thì mọi học sinh đều rơi vào mức Chưa đạt và chức n
 | Quản lý năm học, lớp, môn học, phân công giảng dạy | ✔ | | |
 | Quản lý tài khoản đăng nhập | ✔ | | |
 | Quản lý hồ sơ giáo viên | ✔ | | |
-| Quản lý hồ sơ học sinh | ✔ | Xem, sửa | |
+| Quản lý hồ sơ học sinh (thêm, xóa) | ✔ | | |
+| Xem và sửa hồ sơ học sinh | ✔ | ✔ | |
 | Nhập, sửa điểm | Mọi lớp | Lớp - môn được phân công | |
-| Tra cứu điểm và kết quả học tập | ✔ | ✔ | Của mình |
-| Thống kê theo lớp, phổ điểm theo môn | ✔ | ✔ | |
+| Tra cứu điểm và kết quả học tập | Mọi học sinh | Mọi học sinh | Của mình |
+| Trang chủ | Số liệu toàn trường | Các lớp mình phụ trách | Kết quả của mình |
+| Thống kê theo lớp, phổ điểm theo môn | Toàn trường | Lớp mình phụ trách | |
 | Chốt tổng kết học kỳ | ✔ | | |
 
 ## 6. Cơ sở dữ liệu

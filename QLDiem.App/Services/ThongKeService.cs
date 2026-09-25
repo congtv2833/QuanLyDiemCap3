@@ -27,16 +27,17 @@ public class ThongKeService
         public decimal GiaTri { get; set; }
     }
 
-    /// <summary>Số liệu tổng quan của năm học đang hoạt động, dùng cho trang chủ.</summary>
-    public TongQuanVM LayTongQuan(HocKy hocKy)
+    /// <summary>
+    /// Số liệu tổng quan của năm học đang hoạt động, dùng cho trang chủ.
+    /// Truyền <paramref name="giaoVienId"/> để giới hạn trong các lớp mà giáo viên đó
+    /// dạy hoặc chủ nhiệm; để null thì lấy toàn trường (dành cho quản trị viên).
+    /// </summary>
+    public TongQuanVM LayTongQuan(HocKy hocKy, int? giaoVienId = null)
     {
         var namHoc = LayNamHocHienHanh();
         if (namHoc == null) return new TongQuanVM { TenNamHoc = "Chưa có năm học" };
 
-        var idLop = _db.Lops.AsNoTracking()
-            .Where(l => l.NamHocId == namHoc.Id)
-            .Select(l => l.Id)
-            .ToList();
+        var idLop = LocLop(namHoc.Id, giaoVienId).Select(l => l.Id).ToList();
 
         return new TongQuanVM
         {
@@ -44,18 +45,36 @@ public class ThongKeService
             SoLop = idLop.Count,
             SoHocSinh = _db.HocSinhs.Count(h => idLop.Contains(h.LopId) && h.DangHoc),
             SoGiaoVien = _db.GiaoViens.Count(g => g.DangCongTac),
-            SoMonHoc = _db.MonHocs.Count(),
-            SoDauDiemDaNhap = _db.Diems.Count(d => d.NamHocId == namHoc.Id),
-            ThongKeTheoLop = ThongKeTheoLop(namHoc.Id, hocKy)
+            SoMonHoc = giaoVienId == null
+                ? _db.MonHocs.Count()
+                : _db.PhanCongGiangDays
+                    .Where(p => p.GiaoVienId == giaoVienId && p.NamHocId == namHoc.Id)
+                    .Select(p => p.MonHocId).Distinct().Count(),
+            SoDauDiemDaNhap = _db.Diems.Count(d => d.NamHocId == namHoc.Id
+                                                   && idLop.Contains(d.HocSinh.LopId)),
+            ThongKeTheoLop = ThongKeTheoLop(namHoc.Id, hocKy, giaoVienId: giaoVienId)
         };
     }
 
-    /// <summary>Phân bố xếp loại học tập của từng lớp trong một học kỳ.</summary>
-    public List<ThongKeLopVM> ThongKeTheoLop(int namHocId, HocKy hocKy, int? khoi = null)
+    /// <summary>Các lớp trong năm học, lọc theo giáo viên nếu có.</summary>
+    private List<Lop> LocLop(int namHocId, int? giaoVienId)
     {
-        var lops = _db.Lops.AsNoTracking()
-            .Where(l => l.NamHocId == namHocId && (khoi == null || l.Khoi == khoi))
-            .OrderBy(l => l.Khoi).ThenBy(l => l.Ten)
+        var truyVan = _db.Lops.AsNoTracking().Where(l => l.NamHocId == namHocId);
+
+        if (giaoVienId != null)
+        {
+            truyVan = truyVan.Where(l => l.GiaoVienChuNhiemId == giaoVienId
+                                         || l.PhanCongs.Any(p => p.GiaoVienId == giaoVienId));
+        }
+
+        return truyVan.OrderBy(l => l.Khoi).ThenBy(l => l.Ten).ToList();
+    }
+
+    /// <summary>Phân bố xếp loại học tập của từng lớp trong một học kỳ.</summary>
+    public List<ThongKeLopVM> ThongKeTheoLop(int namHocId, HocKy hocKy, int? khoi = null, int? giaoVienId = null)
+    {
+        var lops = LocLop(namHocId, giaoVienId)
+            .Where(l => khoi == null || l.Khoi == khoi)
             .ToList();
 
         var ketQua = new List<ThongKeLopVM>();

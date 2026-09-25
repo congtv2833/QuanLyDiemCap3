@@ -45,6 +45,7 @@ public class HocSinhController : Controller
         return View(danhSach);
     }
 
+    [Authorize(Policy = "QuanTri")]
     public IActionResult Create()
     {
         ViewBag.DanhSachLop = TaoSelectLop(null);
@@ -56,6 +57,7 @@ public class HocSinhController : Controller
     }
 
     [HttpPost]
+    [Authorize(Policy = "QuanTri")]
     [ValidateAntiForgeryToken]
     public IActionResult Create([Bind("MaHocSinh,HoTen,NgaySinh,GioiTinh,NoiSinh,DiaChi," +
         "DienThoai,Email,HoTenPhuHuynh,DienThoaiPhuHuynh,LopId,DangHoc")] HocSinh model)
