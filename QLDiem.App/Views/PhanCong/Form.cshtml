@@ -15,7 +15,7 @@
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="NamHocId" />
-        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+        <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
 
         <div class="mb-3">
             <label class="form-label">Lớp</label>

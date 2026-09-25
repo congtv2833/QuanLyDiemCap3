@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using QLDiem.Services;
 
 namespace QLDiem.Models;
@@ -44,9 +45,11 @@ public class Lop
     public int Khoi { get; set; }
 
     public int NamHocId { get; set; }
+    [ValidateNever]
     public NamHoc NamHoc { get; set; } = null!;
 
     public int? GiaoVienChuNhiemId { get; set; }
+    [ValidateNever]
     public GiaoVien? GiaoVienChuNhiem { get; set; }
 
     public List<HocSinh> HocSinhs { get; set; } = new();
@@ -69,6 +72,7 @@ public class HocSinh
     public bool DangHoc { get; set; } = true;
 
     public int LopId { get; set; }
+    [ValidateNever]
     public Lop Lop { get; set; } = null!;
 
     public List<Diem> DanhSachDiem { get; set; } = new();
@@ -106,15 +110,19 @@ public class PhanCongGiangDay
     public int Id { get; set; }
 
     public int GiaoVienId { get; set; }
+    [ValidateNever]
     public GiaoVien GiaoVien { get; set; } = null!;
 
     public int LopId { get; set; }
+    [ValidateNever]
     public Lop Lop { get; set; } = null!;
 
     public int MonHocId { get; set; }
+    [ValidateNever]
     public MonHoc MonHoc { get; set; } = null!;
 
     public int NamHocId { get; set; }
+    [ValidateNever]
     public NamHoc NamHoc { get; set; } = null!;
 }
 
@@ -127,12 +135,15 @@ public class Diem
     public int Id { get; set; }
 
     public int HocSinhId { get; set; }
+    [ValidateNever]
     public HocSinh HocSinh { get; set; } = null!;
 
     public int MonHocId { get; set; }
+    [ValidateNever]
     public MonHoc MonHoc { get; set; } = null!;
 
     public int NamHocId { get; set; }
+    [ValidateNever]
     public NamHoc NamHoc { get; set; } = null!;
 
     public HocKy HocKy { get; set; }
@@ -157,12 +168,15 @@ public class DanhGiaNhanXet
     public int Id { get; set; }
 
     public int HocSinhId { get; set; }
+    [ValidateNever]
     public HocSinh HocSinh { get; set; } = null!;
 
     public int MonHocId { get; set; }
+    [ValidateNever]
     public MonHoc MonHoc { get; set; } = null!;
 
     public int NamHocId { get; set; }
+    [ValidateNever]
     public NamHoc NamHoc { get; set; } = null!;
 
     public HocKy HocKy { get; set; }
@@ -180,9 +194,11 @@ public class KetQuaHocKy
     public int Id { get; set; }
 
     public int HocSinhId { get; set; }
+    [ValidateNever]
     public HocSinh HocSinh { get; set; } = null!;
 
     public int NamHocId { get; set; }
+    [ValidateNever]
     public NamHoc NamHoc { get; set; } = null!;
 
     public HocKy HocKy { get; set; }
