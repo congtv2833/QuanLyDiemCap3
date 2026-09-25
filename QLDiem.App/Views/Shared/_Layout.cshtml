@@ -30,7 +30,7 @@
         <div class="container-fluid d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-3">
                 <button class="btn btn-sm btn-outline-light d-lg-none" type="button"
-                        data-bs-toggle="offcanvas" data-bs-target="#menuNgang">Menu</button>
+                        data-bs-toggle="collapse" data-bs-target="#menuNgang">Menu</button>
                 <a class="thuong-hieu" asp-controller="Home" asp-action="Index">
                     Quản lý điểm học sinh THPT
                 </a>
@@ -57,12 +57,10 @@
     </header>
 
     <div class="khung-chinh">
-        <nav class="menu-ben offcanvas-lg offcanvas-start" id="menuNgang">
-            <div class="offcanvas-header d-lg-none">
-                <h6 class="offcanvas-title">Chức năng</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#menuNgang"></button>
-            </div>
-            <div class="offcanvas-body flex-column p-0">
+        @* collapse + d-lg-block: màn hình lớn luôn hiện menu, màn hình nhỏ thu vào nút Menu.
+           Không dùng offcanvas responsive vì lớp đó chỉ có từ Bootstrap 5.2 trở lên. *@
+        <nav class="menu-ben collapse d-lg-block" id="menuNgang">
+            <div class="p-0">
                 <ul class="nav flex-column w-100">
                     <li class="nav-item">
                         <a class="nav-link @Active("Home")" asp-controller="Home" asp-action="Index">Trang chủ</a>

@@ -39,6 +39,7 @@ body {
 .khung-chinh {
     display: flex;
     align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .menu-ben {
@@ -193,7 +194,17 @@ body {
     body { background: #fff; }
 }
 
+/* Màn hình nhỏ: menu trải hết chiều ngang và nằm trên nội dung,
+   hiện ra khi bấm nút Menu trên thanh tiêu đề. */
 @media (max-width: 991.98px) {
-    .menu-ben { position: fixed; }
+    .menu-ben {
+        width: 100%;
+        flex: 0 0 100%;
+        min-height: 0;
+        position: static;
+        border-right: 0;
+        border-bottom: 1px solid var(--mau-vien);
+    }
+
     .vung-noi-dung { padding: 1rem; }
 }
