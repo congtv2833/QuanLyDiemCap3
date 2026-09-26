@@ -78,12 +78,15 @@ body {
 }
 
 .vung-noi-dung {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     padding: 1.25rem 1.5rem 3rem;
     min-width: 0;
 }
 
 /* ----- Thành phần chung ----- */
+
+/* Bootstrap 5.1 chưa có lớp text-bg-* (thêm từ 5.2), thiếu nó chữ trong badge bị trắng trên nền trắng. */
+.text-bg-light { color: #000 !important; background-color: #f8f9fa !important; }
 .tieu-de-trang {
     display: flex;
     align-items: center;
